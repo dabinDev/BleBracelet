@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="30dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:text="测距"
+            android:textColor="@color/color_gray"
+            android:textSize="@dimen/text_size_30" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="标准书写距离"
+            android:textColor="@color/color_gray"
+            android:textSize="@dimen/text_size_15" />
+
+        <am.widget.circleprogressbar.CircleProgressBar
+            android:id="@+id/circleprogressbar_cpb_demo"
+            android:layout_width="wrap_content"
+            android:layout_height="300dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/bg_drawable_center"
+            app:cpbBackgroundColor="@color/colorPrimary"
+            app:cpbBackgroundSize="2dp"
+            app:cpbBottomText="cm"
+            app:cpbBottomTextColor="#ffffbb33"
+            app:cpbBottomTextGap="40dp"
+            app:cpbBottomTextSize="16sp"
+            app:cpbDialAngle="5"
+            app:cpbDialColor="@color/colorPrimary"
+            app:cpbDialGap="4dp"
+            app:cpbDialHeight="10dp"
+            app:cpbDialSpecialColor="@color/colorPrimary"
+            app:cpbDialSpecialHeight="20dp"
+            app:cpbDialSpecialUnit="5"
+            app:cpbDialSpecialWidth="1dp"
+            app:cpbDialWidth="2dp"
+            app:cpbFirstGradientColors="#ff33b5e5"
+            app:cpbFourthGradientColors="@color/colorPrimary"
+            app:cpbGravity="center"
+            app:cpbLoadingDrawOther="true"
+            app:cpbLoadingDuration="3000"
+            app:cpbLoadingRepeatMode="Reverse"
+            app:cpbLoadingText="18"
+            app:cpbMax="810"
+            app:cpbProgress="315"
+            app:cpbProgressDuration="2000"
+            app:cpbProgressMode="Loading"
+            app:cpbProgressSize="20dp"
+            app:cpbProgressValueTextColor="#ff33b5e5"
+            app:cpbProgressValueTextSize="72sp"
+            app:cpbRadius="100dp"
+            app:cpbScaleType="None"
+            app:cpbSecondGradientColors="@color/colorPrimary"
+            app:cpbShowProgressValue="true"
+            app:cpbShowSpecialDialValue="false"
+            app:cpbSpecialDialValueGap="2dp"
+            app:cpbSpecialDialValueTextColor="@color/colorPrimary"
+            app:cpbSpecialDialValueTextSize="12sp"
+            app:cpbStartAngle="135"
+            app:cpbSweepAngle="270"
+            app:cpbThirdGradientColors="#ffffbb33"
+            app:cpbTopTextColor="@color/colorPrimary"
+            app:cpbTopTextGap="40dp"
+            app:cpbTopTextSize="20sp" />
+
+    </RelativeLayout>
+
+</LinearLayout>

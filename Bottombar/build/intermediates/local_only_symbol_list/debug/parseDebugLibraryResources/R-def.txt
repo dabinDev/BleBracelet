@@ -1,0 +1,46 @@
+R_DEF: Internal format may change without notice
+local
+attr? NavigationPaddingBottom
+attr? NavigationPaddingTop
+dimen material_bottom_navigation_active_item_max_width
+dimen material_bottom_navigation_active_text_size
+dimen material_bottom_navigation_elevation
+dimen material_bottom_navigation_height
+dimen material_bottom_navigation_item_max_width
+dimen material_bottom_navigation_item_min_width
+dimen material_bottom_navigation_margin
+dimen material_bottom_navigation_shadow_height
+dimen material_bottom_navigation_text_size
+drawable material_item_background
+drawable red_dot_bg
+drawable round
+drawable special_tab_bg
+drawable special_tab_round_bg
+id icon
+id label
+id messages
+id msg
+id title
+layout base_round_view
+layout item_material
+layout item_material_only_icon
+layout item_normal
+layout special_tab
+layout special_tab_round
+mipmap choos
+mipmap ic_center_def
+mipmap ic_center_sel
+mipmap ic_chart_def
+mipmap ic_chart_sel
+mipmap ic_contact_def
+mipmap ic_contact_sel
+mipmap ic_launcher
+mipmap ic_message_def
+mipmap ic_message_sel
+mipmap ic_mine_def
+mipmap ic_mine_sel
+mipmap plus
+mipmap search
+mipmap top
+string app_name
+styleable PageNavigationView NavigationPaddingTop NavigationPaddingBottom

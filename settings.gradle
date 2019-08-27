@@ -1,0 +1,2 @@
+include ':app', ':Bottombar', ':Prompt'
+rootProject.name='BleBracelet'
