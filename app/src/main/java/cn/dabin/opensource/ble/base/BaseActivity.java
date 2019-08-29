@@ -1,7 +1,9 @@
 package cn.dabin.opensource.ble.base;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,8 +15,16 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import cn.dabin.opensource.ble.boardcast.LocalBroadcastManager;
+import cn.dabin.opensource.ble.ui.activity.HomeAct;
 import cn.dabin.opensource.ble.util.AppManager;
+import cn.dabin.opensource.ble.util.Logger;
+import cn.jpush.android.api.JPushInterface;
 import github.opensource.dialog.BeToastUtil;
+
+import static cn.dabin.opensource.ble.ui.activity.HomeAct.KEY_EXTRAS;
+import static cn.dabin.opensource.ble.ui.activity.HomeAct.KEY_MESSAGE;
+import static cn.dabin.opensource.ble.ui.activity.HomeAct.MESSAGE_RECEIVED_ACTION;
 
 /**
  * Project :  BleBracelet.
@@ -30,6 +40,8 @@ public class BaseActivity extends AppCompatActivity {
     protected Resources mResource;
     protected boolean showInput = true;
     private Intent serviceIntent;
+    //for receive customer msg from jpush server
+    private MessageReceiver mMessageReceiver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,6 +49,8 @@ public class BaseActivity extends AppCompatActivity {
         // 友盟推送
         mContext = this;
         mResource = getResources();
+        init();
+        registerMessageReceiver();  // used for receive msg
     }
 
 
@@ -50,7 +64,10 @@ public class BaseActivity extends AppCompatActivity {
         super.onPause();
     }
 
-
+    // 初始化 JPush。如果已经初始化，但没有登录成功，则执行重新登录。
+    private void init() {
+        JPushInterface.init(getApplicationContext());
+    }
 
     //显示信息toast
     public void showCenterInfoMsg(String text) {
@@ -114,8 +131,34 @@ public class BaseActivity extends AppCompatActivity {
 
 
 
+    public void registerMessageReceiver() {
+        mMessageReceiver = new MessageReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+        filter.addAction(MESSAGE_RECEIVED_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filter);
+    }
+
+    public class MessageReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                if (MESSAGE_RECEIVED_ACTION.equals(intent.getAction())) {
+                    String messge = intent.getStringExtra(KEY_MESSAGE);
+                    String extras = intent.getStringExtra(KEY_EXTRAS);
+                    StringBuilder showMsg = new StringBuilder();
+                    showMsg.append(KEY_MESSAGE + " : " + messge + "\n");
+                    Logger.d(HomeAct.class.getName(), showMsg.toString());
+                }
+            } catch (Exception e) {
+            }
+        }
+    }
+
     @Override
     protected void onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         super.onDestroy();
         if (serviceIntent != null) {
             stopService(serviceIntent);

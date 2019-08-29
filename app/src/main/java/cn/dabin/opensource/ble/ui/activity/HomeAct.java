@@ -35,6 +35,11 @@ import github.benjamin.bottombar.tabs.SpecialTabRound;
  * Class description:
  */
 public class HomeAct extends AppCompatActivity {
+    public static final String MESSAGE_RECEIVED_ACTION = "cn.dabin.opensource.ble.MESSAGE_RECEIVED_ACTION";
+    public static final String KEY_TITLE = "title";
+    public static final String KEY_MESSAGE = "message";
+    public static final String KEY_EXTRAS = "extras";
+    public static boolean isForeground = false;
     private ViewPager viewPager;
     private BaseTabItem tabsMessage;
     private BaseTabItem tabsContact;
@@ -60,8 +65,10 @@ public class HomeAct extends AppCompatActivity {
         mainContent = findViewById(R.id.main_content);
         viewPager = findViewById(R.id.viewPager);
         initBottomBar();
-
     }
+
+
+
 
     private void initBottomBar() {
         PageNavigationView tab = findViewById(R.id.tab);
@@ -108,4 +115,20 @@ public class HomeAct extends AppCompatActivity {
         mainTab.setTextCheckedColor(0xff689df8);
         return mainTab;
     }
+
+
+    @Override
+    protected void onResume() {
+        isForeground = true;
+        super.onResume();
+    }
+
+
+    @Override
+    protected void onPause() {
+        isForeground = false;
+        super.onPause();
+    }
+
+
 }
