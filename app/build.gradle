@@ -45,4 +45,5 @@ dependencies {
     implementation rootProject.ext.dependencies.circleprogressbar
     implementation project(path: ':Bottombar')
     implementation project(path: ':Prompt')
+    implementation project(path: ':FastBleLib')
 }
