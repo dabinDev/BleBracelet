@@ -1,2 +1,2 @@
-include ':app', ':Bottombar', ':Prompt', ':FastBleLib'
+include ':app', ':Bottombar', ':Prompt', ':FastBleLib', ':MPChartLib'
 rootProject.name='BleBracelet'

@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="color_333333">#333333</color>
-    <color name="color_ffffff">#FFFFFF</color>
+    <color name="colorBlack">#333333</color>
+    <color name="colorWhite">#FFFFFF</color>
     <color name="colorMain">#689DF8</color>
+    <color name="colorPrimaryText">#212121</color>
+    <color name="colorSecondaryText">#727272</color>
+    <color name="colorDivider">#B6B6B6</color>
+    <color name="colorAlbumText">#99FFFFFF</color>
+    <color name="colorImageSelect">#000000</color>
+    <color name="colorStatusBarBlue">#4eb8e4</color>
+    <!--相册状态栏-->
+    <color name="colorButtonText">#FFFFFF</color>
+    <color name="colorPrimary">#689DF8</color>
+    <color name="colorPrimaryDark">#689DF8</color>
+    <color name="colorPrimaryLight">#689DF8</color>
+    <color name="colorAccent">#689DF8</color>
+    <color name="colorLabelBg">#aacf52</color>
 
 </resources>

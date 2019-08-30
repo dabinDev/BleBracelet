@@ -1,6 +1,5 @@
 package cn.dabin.opensource.ble.base;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -23,16 +22,18 @@ import github.opensource.dialog.BeToastUtil;
  * Changed time: 2019/8/27 16:09
  * Class description:
  */
-public abstract class BaseLazyFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
     private boolean isLazyLoaded;
     private boolean isPrepared;
-    private View view;
+    public View view;
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         lazyLoad();
     }
+
+
 
 
     /**

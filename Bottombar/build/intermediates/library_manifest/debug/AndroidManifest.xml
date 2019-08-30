@@ -3,7 +3,7 @@
     package="github.benjamin.bottombar" >
 
     <uses-sdk
-        android:minSdkVersion="17"
+        android:minSdkVersion="19"
         android:targetSdkVersion="28" />
 
     <application

@@ -8,11 +8,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.gyf.immersionbar.ImmersionBar;
 
 import cn.dabin.opensource.ble.R;
+import cn.dabin.opensource.ble.base.BaseActivity;
 import cn.dabin.opensource.ble.ui.view.ImageViewWithStroke;
 import cn.dabin.opensource.ble.util.SharedPreUtil;
 
@@ -25,7 +25,7 @@ import cn.dabin.opensource.ble.util.SharedPreUtil;
  * Changed time: 2019/8/27 15:01
  * Class description:
  */
-public class LoginAct extends AppCompatActivity implements View.OnClickListener {
+public class LoginAct extends BaseActivity implements View.OnClickListener {
 
 
     private Button btnLogin;

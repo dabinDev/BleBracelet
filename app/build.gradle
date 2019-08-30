@@ -43,7 +43,10 @@ dependencies {
     implementation rootProject.ext.dependencies.litepal
     implementation rootProject.ext.dependencies.immersionbar
     implementation rootProject.ext.dependencies.circleprogressbar
+    implementation rootProject.ext.dependencies.eventbus
+    implementation rootProject.ext.dependencies.okgo
     implementation project(path: ':Bottombar')
     implementation project(path: ':Prompt')
     implementation project(path: ':FastBleLib')
+    implementation project(path: ':MPChartLib')
 }

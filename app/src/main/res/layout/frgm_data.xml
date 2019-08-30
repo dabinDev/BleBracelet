@@ -1,6 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:weightSum="2"
     android:layout_height="match_parent">
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/tv_tip"
+        android:layout_width="match_parent"
+        android:lines="2"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginEnd="25dp"
+        android:background="@drawable/shape_label_bg"
+        android:text="学习姿势不端正是导致颈椎，脊椎近视等问题的重要因素"
+        android:textColor="@color/colorWhite"
+        android:gravity="center_vertical|start"
+        android:textSize="@dimen/text_size_17"
+        android:layout_height="50dp" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:paddingStart="15dp"
+        android:paddingBottom="15dp"
+        android:paddingRight="15dp"
+        android:layout_above="@id/tv_tip"
+        android:weightSum="2"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_eye_distance"
+                android:layout_width="match_parent"
+                android:text="用眼距离日对比"
+                android:textColor="@color/colorSecondaryText"
+                android:gravity="center_vertical|start"
+                android:textSize="@dimen/text_size_17"
+                android:layout_height="50dp" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/chart1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/tv_eye_distance" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_error_time"
+                android:layout_width="match_parent"
+                android:text="错误用眼占用时间比"
+                android:textColor="@color/colorSecondaryText"
+                android:gravity="center_vertical|start"
+                android:textSize="@dimen/text_size_17"
+                android:layout_height="50dp" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/chart2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/tv_error_time" />
+        </RelativeLayout>
+    </LinearLayout>
+</RelativeLayout>

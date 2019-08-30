@@ -1,7 +1,7 @@
 package cn.dabin.opensource.ble.ui.fragment;
 
 import cn.dabin.opensource.ble.R;
-import cn.dabin.opensource.ble.base.BaseLazyFragment;
+import cn.dabin.opensource.ble.base.BaseFragment;
 
 /**
  * Project :  BleBracelet.
@@ -12,7 +12,7 @@ import cn.dabin.opensource.ble.base.BaseLazyFragment;
  * Changed time: 2019/8/27 16:59
  * Class description:
  */
-public class MeFrgm extends BaseLazyFragment {
+public class MeFrgm extends BaseFragment {
     @Override protected int getLayoutId() {
         return R.layout.frgm_me;
     }

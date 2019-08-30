@@ -3,8 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingTop="30dp">
+    android:paddingStart="15dp"
+    android:paddingBottom="15dp"
+    android:paddingRight="15dp"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -13,18 +15,20 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:text="测距"
-            android:textColor="@color/color_gray"
-            android:textSize="@dimen/text_size_30" />
+            android:gravity="center_vertical|start"
+            android:layout_height="50dp"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="@dimen/text_size_20" />
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_alignParentEnd="true"
+            android:gravity="center_vertical|end"
             android:text="标准书写距离"
-            android:textColor="@color/color_gray"
+            android:textColor="@color/colorSecondaryText"
             android:textSize="@dimen/text_size_15" />
 
         <am.widget.circleprogressbar.CircleProgressBar
@@ -79,4 +83,90 @@
 
     </RelativeLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:weightSum="3"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_weight="2.4"
+            android:layout_height="0dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_weight="0.6"
+            android:orientation="vertical"
+            android:weightSum="2"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:layout_height="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:weightSum="2"
+                android:orientation="horizontal"
+                android:layout_height="0dp">
+
+                <TextView
+                    android:id="@+id/tv_unnormal"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|start"
+                    android:text="非正常使用"
+                    android:drawablePadding="10dp"
+                    android:drawableStart="@drawable/icon_square_blue"
+                    android:textSize="@dimen/text_size_15"
+                    android:textColor="@color/colorSecondaryText"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/tv_low_distance"
+                    android:layout_width="0dp"
+                    android:text="近距离用眼"
+                    android:gravity="center_vertical|start"
+                    android:textSize="@dimen/text_size_15"
+                    android:layout_weight="1"
+                    android:drawablePadding="10dp"
+                    android:drawableStart="@drawable/icon_square_dark"
+                    android:textColor="@color/colorSecondaryText"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:weightSum="2"
+                android:orientation="horizontal"
+                android:layout_height="0dp">
+
+                <TextView
+                    android:id="@+id/tv_normal"
+                    android:textColor="@color/colorSecondaryText"
+                    android:layout_width="0dp"
+                    android:text="正常使用"
+                    android:gravity="center_vertical|start"
+                    android:drawablePadding="10dp"
+                    android:textSize="@dimen/text_size_15"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/icon_square_hint"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/tv_error_use"
+                    android:layout_width="0dp"
+                    android:textColor="@color/colorSecondaryText"
+                    android:gravity="center_vertical|start"
+                    android:text="错误握笔姿势用眼时长"
+                    android:drawablePadding="10dp"
+                    android:drawableStart="@drawable/icon_square_yellow"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/text_size_15"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

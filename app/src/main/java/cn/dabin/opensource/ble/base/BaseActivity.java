@@ -14,6 +14,9 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.gyf.immersionbar.ImmersionBar;
+
+import cn.dabin.opensource.ble.R;
 import cn.dabin.opensource.ble.boardcast.JPushBroadcast;
 import cn.dabin.opensource.ble.boardcast.LocalBroadcastManager;
 import cn.dabin.opensource.ble.util.AppManager;
@@ -46,6 +49,11 @@ public class BaseActivity extends AppCompatActivity {
         mContext = this;
         mResource = getResources();
         init();
+        ImmersionBar.with(this)
+                .statusBarColor(R.color.color_white)
+                .statusBarDarkFont(true)
+                .fullScreen(true)
+                .init();
         registerMessageReceiver();  // used for receive msg
     }
 
