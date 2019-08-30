@@ -1,6 +1,5 @@
 package cn.dabin.opensource.ble.base;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -15,15 +14,12 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import cn.dabin.opensource.ble.boardcast.JPushBroadcast;
 import cn.dabin.opensource.ble.boardcast.LocalBroadcastManager;
-import cn.dabin.opensource.ble.ui.activity.HomeAct;
 import cn.dabin.opensource.ble.util.AppManager;
-import cn.dabin.opensource.ble.util.Logger;
 import cn.jpush.android.api.JPushInterface;
 import github.opensource.dialog.BeToastUtil;
 
-import static cn.dabin.opensource.ble.ui.activity.HomeAct.KEY_EXTRAS;
-import static cn.dabin.opensource.ble.ui.activity.HomeAct.KEY_MESSAGE;
 import static cn.dabin.opensource.ble.ui.activity.HomeAct.MESSAGE_RECEIVED_ACTION;
 
 /**
@@ -41,7 +37,7 @@ public class BaseActivity extends AppCompatActivity {
     protected boolean showInput = true;
     private Intent serviceIntent;
     //for receive customer msg from jpush server
-    private MessageReceiver mMessageReceiver;
+    private JPushBroadcast jPushBroadcast;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -115,7 +111,7 @@ public class BaseActivity extends AppCompatActivity {
 
 
     public boolean isShouldHideInput(View v, MotionEvent event) {
-        if (v != null && (v instanceof EditText)) {
+        if ((v instanceof EditText)) {
             int[] leftTop = {0, 0};
             //获取输入框当前的location位置
             v.getLocationInWindow(leftTop);
@@ -129,41 +125,24 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-
-
     public void registerMessageReceiver() {
-        mMessageReceiver = new MessageReceiver();
+        jPushBroadcast = new JPushBroadcast();
         IntentFilter filter = new IntentFilter();
         filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         filter.addAction(MESSAGE_RECEIVED_ACTION);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filter);
-    }
-
-    public class MessageReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            try {
-                if (MESSAGE_RECEIVED_ACTION.equals(intent.getAction())) {
-                    String messge = intent.getStringExtra(KEY_MESSAGE);
-                    String extras = intent.getStringExtra(KEY_EXTRAS);
-                    StringBuilder showMsg = new StringBuilder();
-                    showMsg.append(KEY_MESSAGE + " : " + messge + "\n");
-                    Logger.d(HomeAct.class.getName(), showMsg.toString());
-                }
-            } catch (Exception e) {
-            }
-        }
+        LocalBroadcastManager.getInstance(this).registerReceiver(jPushBroadcast, filter);
     }
 
     @Override
     protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(jPushBroadcast);
         super.onDestroy();
         if (serviceIntent != null) {
             stopService(serviceIntent);
         }
         AppManager.getAppManager().finishActivity(this);
     }
+
+
 }
 

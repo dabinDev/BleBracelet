@@ -164,6 +164,7 @@
                 <category android:name="${applicationId}"></category>
             </intent-filter>
         </receiver>
+        <receiver android:name=".base.BaseActivity" />
 
         <!--since 3.3.0 Required SDK核心功能-->
         <activity
@@ -176,6 +177,8 @@
                 <category android:name="${applicationId}" />
             </intent-filter>
         </activity>
+        <activity android:name=".base.BaseActivity" />
+        <activity android:name=".ui.activity.DeviceListAct" />
 
         <!-- since 3.3.0 Required SDK 核心功能-->
         <!-- 可配置android:process参数将PushService放在其他进程中 -->

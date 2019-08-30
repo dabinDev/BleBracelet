@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 
 import cn.dabin.opensource.ble.R;
 import cn.dabin.opensource.ble.adapter.ViewpagerFragmentAdapter;
+import cn.dabin.opensource.ble.base.BaseActivity;
 import cn.dabin.opensource.ble.ui.fragment.DataFagm;
 import cn.dabin.opensource.ble.ui.fragment.GuardianFagm;
 import cn.dabin.opensource.ble.ui.fragment.HomeFrgm;
@@ -34,7 +34,7 @@ import github.benjamin.bottombar.tabs.SpecialTabRound;
  * Changed time: 2019/8/27 14:28
  * Class description:
  */
-public class HomeAct extends AppCompatActivity {
+public class HomeAct extends BaseActivity {
     public static final String MESSAGE_RECEIVED_ACTION = "cn.dabin.opensource.ble.MESSAGE_RECEIVED_ACTION";
     public static final String KEY_TITLE = "title";
     public static final String KEY_MESSAGE = "message";

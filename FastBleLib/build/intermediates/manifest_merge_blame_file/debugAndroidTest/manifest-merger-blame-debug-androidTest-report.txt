@@ -3,24 +3,24 @@
 3    package="com.clj.fastble.test" >
 4
 5    <uses-sdk
-5-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger5008428507818395734.xml:5:5-74
-6        android:minSdkVersion="17"
-6-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger5008428507818395734.xml:5:15-41
+5-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger2924962056032261635.xml:5:5-74
+6        android:minSdkVersion="18"
+6-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger2924962056032261635.xml:5:15-41
 7        android:targetSdkVersion="28" />
-7-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger5008428507818395734.xml:5:42-71
+7-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger2924962056032261635.xml:5:42-71
 8
 9    <instrumentation
-9-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger5008428507818395734.xml:11:5-15:70
+9-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger2924962056032261635.xml:11:5-15:70
 10        android:name="android.test.InstrumentationTestRunner"
-10-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger5008428507818395734.xml:11:22-75
+10-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger2924962056032261635.xml:11:22-75
 11        android:functionalTest="false"
-11-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger5008428507818395734.xml:14:22-52
+11-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger2924962056032261635.xml:14:22-52
 12        android:handleProfiling="false"
-12-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger5008428507818395734.xml:13:22-53
+12-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger2924962056032261635.xml:13:22-53
 13        android:label="Tests for com.clj.fastble.test"
-13-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger5008428507818395734.xml:15:22-68
+13-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger2924962056032261635.xml:15:22-68
 14        android:targetPackage="com.clj.fastble.test" />
-14-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger5008428507818395734.xml:12:22-66
+14-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger2924962056032261635.xml:12:22-66
 15
 16    <uses-permission android:name="android.permission.BLUETOOTH" />
 16-->[__tested_artifact__::FastBleLib] F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\library_manifest\debug\AndroidManifest.xml:11:5-68
@@ -36,11 +36,11 @@
 19-->[__tested_artifact__::FastBleLib] F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\library_manifest\debug\AndroidManifest.xml:14:22-76
 20
 21    <application android:debuggable="true" >
-21-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger5008428507818395734.xml:7:5-9:19
-21-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger5008428507818395734.xml:7:18-43
+21-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger2924962056032261635.xml:7:5-9:19
+21-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger2924962056032261635.xml:7:18-43
 22        <uses-library android:name="android.test.runner" />
-22-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger5008428507818395734.xml:8:9-60
-22-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger5008428507818395734.xml:8:23-57
+22-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger2924962056032261635.xml:8:9-60
+22-->F:\AndroidProject\BleBracelet\FastBleLib\build\intermediates\tmp\manifest\androidTest\debug\manifestMerger2924962056032261635.xml:8:23-57
 23    </application>
 24
 25</manifest>
