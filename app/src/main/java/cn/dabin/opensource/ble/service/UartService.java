@@ -118,6 +118,8 @@ public class UartService extends Service {
             sendMsgWithMsg(BleEvent.ACTION_DATA_AVAILABLE, characteristic);
         }
     };
+    private String currentAddress;
+    private int totalCount = 0;
 
     private void sendMsg(final String action) {
         EventBus.getDefault().post(new BleEvent(action));
@@ -135,6 +137,7 @@ public class UartService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        totalCount = 0;
         return mBinder;
     }
 
@@ -182,6 +185,7 @@ public class UartService extends Service {
      * callback.
      */
     public boolean connect(final String address) {
+        currentAddress = address;
         if (mBluetoothAdapter == null || address == null) {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             return false;
@@ -293,7 +297,13 @@ public class UartService extends Service {
 
     public void writeRXCharacteristic(byte[] value) {
         BluetoothGattService rxService = mBluetoothGatt.getService(RX_SERVICE_UUID);
-        showMessage("mBluetoothGatt null" + mBluetoothGatt);
+        if (mBluetoothGatt == null) {
+            totalCount++;
+            if (totalCount < 5) {
+                connect(currentAddress);
+            }
+            return;
+        }
         if (rxService == null) {
             showMessage("Rx service not found!");
             sendMsg(BleEvent.DEVICE_DOES_NOT_SUPPORT_UART);
@@ -330,7 +340,7 @@ public class UartService extends Service {
     }
 
     public class LocalBinder extends Binder {
-      public  UartService getService() {
+        public UartService getService() {
             return UartService.this;
         }
     }

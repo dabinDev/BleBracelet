@@ -57,6 +57,8 @@ public class DataFagm extends BaseFragment {
         initTestData();
     }
 
+
+
     private void initChart() {
         mTf = Typeface.createFromAsset(getContext().getAssets(), "OpenSans-Regular.ttf");
 

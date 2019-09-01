@@ -20,6 +20,7 @@ import cn.dabin.opensource.ble.R;
 import cn.dabin.opensource.ble.boardcast.JPushBroadcast;
 import cn.dabin.opensource.ble.boardcast.LocalBroadcastManager;
 import cn.dabin.opensource.ble.util.AppManager;
+import cn.dabin.opensource.ble.util.SharedPreUtil;
 import cn.jpush.android.api.JPushInterface;
 import github.opensource.dialog.BeToastUtil;
 
@@ -34,7 +35,8 @@ import static cn.dabin.opensource.ble.ui.activity.HomeAct.MESSAGE_RECEIVED_ACTIO
  * Changed time: 2019/8/27 16:11
  * Class description:
  */
-public class BaseActivity extends AppCompatActivity {
+   public class BaseActivity extends AppCompatActivity {
+
     protected Context mContext;
     protected Resources mResource;
     protected boolean showInput = true;
@@ -45,6 +47,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppManager.getAppManager().addActivity(this);
         // 友盟推送
         mContext = this;
         mResource = getResources();
@@ -57,11 +60,6 @@ public class BaseActivity extends AppCompatActivity {
         registerMessageReceiver();  // used for receive msg
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
 
     @Override
     protected void onPause() {
@@ -151,6 +149,17 @@ public class BaseActivity extends AppCompatActivity {
         AppManager.getAppManager().finishActivity(this);
     }
 
+    public String readToken() {
+        return SharedPreUtil.getString(this, "token", "");
+    }
+
+
+    public void saveToken(String token) {
+        SharedPreUtil.saveString(this, "token", token);
+    }
+
 
 }
+
+
 

@@ -3,9 +3,11 @@
     <color name="colorBlack">#333333</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorMain">#689DF8</color>
+    <color name="colorBg">#f7f7f7</color>
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecondaryText">#727272</color>
-    <color name="colorDivider">#B6B6B6</color>
+    <color name="colorDividerGray">#f8f8f8</color>
+    <color name="colorDividerYellow">#ec6200</color>
     <color name="colorAlbumText">#99FFFFFF</color>
     <color name="colorImageSelect">#000000</color>
     <color name="colorStatusBarBlue">#4eb8e4</color>
@@ -16,5 +18,7 @@
     <color name="colorPrimaryLight">#689DF8</color>
     <color name="colorAccent">#689DF8</color>
     <color name="colorLabelBg">#aacf52</color>
+    <color name="colorLoginBtnBlue">#67cce0</color>
+    <color name="colorLoginBtnGray">#b8bfcc</color>
 
 </resources>

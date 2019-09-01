@@ -10,6 +10,8 @@ package cn.dabin.opensource.ble.event;
  * Class description:
  */
 public class BleEvent {
+    public final static String ACTION_SEND_MSG =
+            "CN.DABIN.BLE.ACTION_SEND_MSG";
     public final static String ACTION_GATT_CONNECTED =
             "CN.DABIN.BLE.ACTION_GATT_CONNECTED";
     public final static String ACTION_GATT_DISCONNECTED =

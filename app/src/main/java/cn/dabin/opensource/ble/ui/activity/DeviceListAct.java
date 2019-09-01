@@ -29,7 +29,6 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -62,33 +61,26 @@ public class DeviceListAct extends Activity {
     private static final int CONNECT_LAST_DEVICE = 3;
     List<BluetoothDevice> deviceList;
     Map<String, Integer> devRssiValues;
-    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothAdapter bluetoothAdapter;
     // private BluetoothAdapter mBtAdapter;
     private TextView mEmptyList;
     private DeviceAdapter deviceAdapter;
-    private ServiceConnection onService = null;
-    private Handler mHandler;
-    private boolean mScanning;
-    private BluetoothAdapter.LeScanCallback mLeScanCallback =
-            new BluetoothAdapter.LeScanCallback() {
-
+    private Handler handler;
+    private boolean isScanning;
+    private BluetoothAdapter.LeScanCallback leScanCallback =
+            (device, rssi, scanRecord) -> runOnUiThread(new Runnable() {
                 @Override
-                public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                public void run() {
 
-                            addDevice(device, rssi);
-                        }
-                    });
+                    addDevice(device, rssi);
                 }
-            };
+            });
     private OnItemClickListener mDeviceClickListener = new OnItemClickListener() {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             BluetoothDevice device = deviceList.get(position);
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+            bluetoothAdapter.stopLeScan(leScanCallback);
 
             Bundle b = new Bundle();
             b.putString(BluetoothDevice.EXTRA_DEVICE, deviceList.get(position).getAddress());
@@ -112,7 +104,7 @@ public class DeviceListAct extends Activity {
         android.view.WindowManager.LayoutParams layoutParams = this.getWindow().getAttributes();
         layoutParams.gravity = Gravity.TOP;
         layoutParams.y = 200;
-        mHandler = new Handler();
+        handler = new Handler();
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -124,10 +116,10 @@ public class DeviceListAct extends Activity {
         // BluetoothAdapter through BluetoothManager.
         final BluetoothManager bluetoothManager =
                 (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
+        bluetoothAdapter = bluetoothManager.getAdapter();
 
         // Checks if Bluetooth is supported on the device.
-        if (mBluetoothAdapter == null) {
+        if (bluetoothAdapter == null) {
             Toast.makeText(this, "设备不支持", Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -139,7 +131,7 @@ public class DeviceListAct extends Activity {
             @Override
             public void onClick(View v) {
 
-                if (!mScanning) {
+                if (!isScanning) {
                     scanLeDevice(true);
                 } else {
                     finish();
@@ -168,23 +160,23 @@ public class DeviceListAct extends Activity {
         final Button cancelButton = findViewById(R.id.btn_cancel);
         if (enable) {
             // Stops scanning after a pre-defined scan period.
-            mHandler.postDelayed(new Runnable() {
+            handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mScanning = false;
-                    mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                    isScanning = false;
+                    bluetoothAdapter.stopLeScan(leScanCallback);
 
                     cancelButton.setText("扫描");
 
                 }
             }, SCAN_PERIOD);
 
-            mScanning = true;
-            mBluetoothAdapter.startLeScan(mLeScanCallback);
+            isScanning = true;
+            bluetoothAdapter.startLeScan(leScanCallback);
             cancelButton.setText("取消");
         } else {
-            mScanning = false;
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+            isScanning = false;
+            bluetoothAdapter.stopLeScan(leScanCallback);
             cancelButton.setText("扫描");
         }
 
@@ -229,14 +221,14 @@ public class DeviceListAct extends Activity {
     @Override
     public void onStop() {
         super.onStop();
-        mBluetoothAdapter.stopLeScan(mLeScanCallback);
+        bluetoothAdapter.stopLeScan(leScanCallback);
 
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mBluetoothAdapter.stopLeScan(mLeScanCallback);
+        bluetoothAdapter.stopLeScan(leScanCallback);
 
     }
 

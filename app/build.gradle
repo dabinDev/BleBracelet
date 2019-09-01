@@ -17,6 +17,8 @@ android {
             abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
             // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
         }
+        //添加如下配置就OK了
+        javaCompileOptions { annotationProcessorOptions { includeCompileClasspath = false } }
 
     }
     buildTypes {
@@ -29,6 +31,10 @@ android {
         main {
             jniLibs.srcDirs = ['libs']
         }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 }
 
@@ -49,4 +55,5 @@ dependencies {
     implementation project(path: ':Prompt')
     implementation project(path: ':FastBleLib')
     implementation project(path: ':MPChartLib')
+    implementation 'com.yanzhenjie.permission:support:2.0.1'
 }

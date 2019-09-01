@@ -1,19 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:weightSum="7"
+    android:weightSum="8"
     android:orientation="vertical"
     android:layout_width="match_parent"
+    android:clipToPadding="false"
     android:clipChildren="false"
+    android:background="@color/colorBg"
     android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/topPanel"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:clipToPadding="false"
         android:background="@drawable/bg_home_top"
         android:layout_weight="3">
 
+        <LinearLayout
+            android:id="@+id/ll_top1"
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_height="40dp">
+
+            <ImageView
+                android:id="@+id/tv_to_last"
+                android:layout_width="wrap_content"
+                android:src="@mipmap/ic_to_left"
+                android:paddingStart="20dp"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/tv_home_time"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textColor="@color/color_white"
+                android:text="8月20日" />
+
+            <ImageView
+                android:id="@+id/tv_to_next"
+                android:layout_width="wrap_content"
+                android:src="@mipmap/ic_to_right"
+                android:paddingEnd="20dp"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_top2"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/ll_top1"
+            android:layout_height="40dp">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_centerInParent="true"
+                android:layout_alignParentStart="true"
+                android:textColor="@color/color_white"
+                android:textSize="@dimen/text_size_17"
+                android:text="综合评分" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="right|center_vertical"
+                android:gravity="center_vertical"
+                android:text="8月20日"
+                android:textColor="@color/color_white" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_top3"
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/rl_top2"
+            android:layout_height="100dp">
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentStart="true"
+                android:layout_height="100dp">
+
+
+                <TextView
+                    android:id="@+id/tv_today_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_centerInParent="true"
+                    android:layout_alignParentStart="true"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/text_size_56"
+                    android:text="良" />
+
+                <TextView
+                    android:id="@+id/tv_today_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="right|center_vertical"
+                    android:gravity="center_vertical"
+                    android:text="8月20日"
+                    android:textColor="@color/color_white" />
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/tv_today_flag"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="right|center_vertical"
+                android:gravity="center_vertical"
+                android:text="小树苗"
+                android:textSize="@dimen/text_size_25"
+                android:textColor="@color/color_white" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:paddingBottom="20dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_battery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="当前电量: 75%"
+                android:textColor="@color/color_white" />
+
+            <TextView
+                android:id="@+id/tv_last_reset_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:gravity="center_vertical"
+                android:text="最后同步时间: 8月1日"
+                android:textColor="@color/color_white" />
+
+        </LinearLayout>
+
         <TextView
+            android:id="@+id/tv_reset"
             android:layout_width="100dp"
             android:background="@drawable/ic_reset"
             android:layout_alignParentBottom="true"
@@ -26,4 +177,410 @@
             android:layout_height="100dp" />
     </RelativeLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:orientation="vertical"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
+        android:weightSum="4">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.4" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_loudou" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="总共用眼时间"
+                    android:textColor="@color/colorSecondaryText"
+                    android:textSize="@dimen/text_size_15" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_total_use"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|end"
+                    android:text="580"
+                    android:textColor="@color/colorSecondaryText"
+                    android:textSize="@dimen/text_size_20" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="分钟"
+                    android:textColor="@color/colorSecondaryText"
+                    android:textSize="@dimen/text_size_15" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@color/colorDividerYellow" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:orientation="vertical"
+            android:weightSum="2">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/shape_square_white"
+                    android:orientation="horizontal"
+                    android:padding="3dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.3"
+                        android:gravity="start"
+                        android:orientation="vertical"
+                        android:weightSum="2.3">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_see" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.3"
+                            android:gravity="center_vertical"
+                            android:text="近距离\n用眼时长"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/text_size_15" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.7"
+                        android:gravity="end"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv_near_distance_use"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical|end"
+                            android:text="580"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/text_size_20" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:text="分钟"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/text_size_15" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/shape_square_white"
+                    android:orientation="horizontal"
+                    android:padding="3dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.3"
+                        android:gravity="start"
+                        android:orientation="vertical"
+                        android:weightSum="2.3">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_unsee" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.3"
+                            android:gravity="center_vertical"
+                            android:text="错误握笔姿势\n导致的用眼时长"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/text_size_15" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.7"
+                        android:gravity="end"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv_error_use"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical|end"
+                            android:text="580"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/text_size_20" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:text="分钟"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/text_size_15" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="3dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/shape_square_white"
+                    android:orientation="horizontal"
+                    android:padding="3dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.3"
+                        android:gravity="start"
+                        android:orientation="vertical"
+                        android:weightSum="2.3">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_clock" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.3"
+                            android:gravity="center_vertical"
+                            android:text="长时间\n用眼提醒"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/text_size_15" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.7"
+                        android:gravity="end"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv_long_use_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical|end"
+                            android:text="580"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/text_size_20" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:text="次"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/text_size_15" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="3dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/shape_square_white"
+                    android:orientation="horizontal"
+                    android:padding="3dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.3"
+                        android:gravity="start"
+                        android:orientation="vertical"
+                        android:weightSum="2.3">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_rule" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.3"
+                            android:gravity="center_vertical"
+                            android:text="用眼距离\n平均值"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/text_size_15" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+
+                        android:layout_weight="0.7"
+                        android:gravity="end"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv_use_distance_use"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical|end"
+                            android:text="580"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/text_size_20" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:text="厘米"
+                            android:textColor="@color/colorSecondaryText"
+                            android:textSize="@dimen/text_size_15" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:layout_weight="0.6"
+            android:background="@drawable/ic_home_bottom"
+            android:gravity="center_vertical|start"
+            android:lines="2"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/text_size_15">
+
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_height="match_parent"
+                android:padding="5dp"
+                android:gravity="center"
+                android:textColor="@color/colorWhite">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="优"
+                    android:background="@drawable/ic_home_heart"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/text_size_20"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:gravity="center"
+                    android:layout_height="match_parent" />
+
+            </FrameLayout>
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
 </LinearLayout>

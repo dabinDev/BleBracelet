@@ -11,6 +11,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.nio.charset.StandardCharsets;
+
+import cn.dabin.opensource.ble.event.BleEvent;
+import cn.dabin.opensource.ble.util.StringUtils;
 import github.opensource.dialog.BeToastUtil;
 
 /**
@@ -23,17 +29,15 @@ import github.opensource.dialog.BeToastUtil;
  * Class description:
  */
 public abstract class BaseFragment extends Fragment {
+    public View view;
     private boolean isLazyLoaded;
     private boolean isPrepared;
-    public View view;
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         lazyLoad();
     }
-
-
 
 
     /**
@@ -48,10 +52,6 @@ public abstract class BaseFragment extends Fragment {
         }
         return -1;
     }
-
-
-
-
 
 
     //显示信息toast
@@ -94,7 +94,6 @@ public abstract class BaseFragment extends Fragment {
     public abstract void onLazyLoad();
 
 
-
     @Override public void onAttach(Context context) {
         super.onAttach(context);
     }
@@ -123,6 +122,15 @@ public abstract class BaseFragment extends Fragment {
     }
 
 
+    public void sendMessage(String message) {
+        if (StringUtils.isEmpty(message)) {
+            return;
+        }
+        byte[] value;
+        //send data to service
+        value = message.getBytes(StandardCharsets.UTF_8);
+        EventBus.getDefault().post(new BleEvent(BleEvent.ACTION_SEND_MSG, value));
+    }
 
     @Override
     public void onDestroyView() {

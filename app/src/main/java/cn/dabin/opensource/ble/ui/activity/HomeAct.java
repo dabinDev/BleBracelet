@@ -4,11 +4,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,22 +18,22 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
+
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.runtime.Permission;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -49,6 +50,8 @@ import cn.dabin.opensource.ble.ui.fragment.HomeFrgm;
 import cn.dabin.opensource.ble.ui.fragment.MeFrgm;
 import cn.dabin.opensource.ble.ui.fragment.SettingFrgm;
 import cn.dabin.opensource.ble.util.DevicePreferences;
+import cn.dabin.opensource.ble.util.Logger;
+import cn.dabin.opensource.ble.util.StringUtils;
 import github.benjamin.bottombar.NavigationController;
 import github.benjamin.bottombar.PageNavigationView;
 import github.benjamin.bottombar.item.BaseTabItem;
@@ -64,7 +67,7 @@ import github.benjamin.bottombar.tabs.SpecialTabRound;
  * Changed time: 2019/8/27 14:28
  * Class description:
  */
-public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChangeListener, ServiceConnection, View.OnClickListener {
+public class HomeAct extends BaseActivity implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
     public static final String MESSAGE_RECEIVED_ACTION = "cn.dabin.opensource.ble.MESSAGE_RECEIVED_ACTION";
     public static final String KEY_TITLE = "title";
     public static final String KEY_MESSAGE = "message";
@@ -74,6 +77,7 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
     private static final int CONNECT_LAST_DEVICE = 3;
     private static final int UART_PROFILE_CONNECTED = 20;
     private static final int UART_PROFILE_DISCONNECTED = 21;
+    private static final long SCAN_PERIOD = 10000; //scanning for 10 seconds
     public static boolean isForeground = false;
     private static int currentStatus = UART_PROFILE_DISCONNECTED;
     public final String TAG = this.getClass().getSimpleName();
@@ -89,7 +93,49 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
     private BaseTabItem tabsWork;
     private BaseTabItem tabsChart;
     private BaseTabItem tabsMine;
-    private FrameLayout mainContent;
+    private BluetoothAdapter bluetoothAdapter;
+    private Handler handler;
+    private boolean isScanning;
+    private BluetoothAdapter.LeScanCallback leScanCallback =
+            (device, rssi, scanRecord) -> runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Logger.e(TAG, "deviceName" + device.getName());
+                    if (StringUtils.value(device.getName()).contains("MB0002")) {
+                        btDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(device.getAddress());
+                        // store connected device
+                        lastDeviceAddress = btDevice.getAddress();
+                        DevicePreferences.setLastDevice(getApplicationContext(), lastDeviceAddress);
+                        boolean isConnect = false;
+                        if (uartService != null) {
+                            isConnect = uartService.connect(lastDeviceAddress);
+                        } else {
+                            tryConnectBT();
+                        }
+                        if (isConnect) {
+                            Log.d(TAG, "连接成功！");
+                            bluetoothAdapter.stopLeScan(leScanCallback);
+                        }
+                    }
+                }
+            });
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override public void onServiceConnected(ComponentName name, IBinder service) {
+            uartService = ((UartService.LocalBinder) service).getService();
+            Log.d(TAG, "onServiceConnected uartService= " + uartService);
+            if (!uartService.initialize()) {
+                Log.e(TAG, "Unable to initialize Bluetooth");
+                finish();
+            }
+        }
+
+        @Override public void onServiceDisconnected(ComponentName name) {
+            //uartService.disconnect(btDevice);
+            uartService = null;
+        }
+    };
+
 
     public static void openAct(Context context) {
         Intent intent = new Intent();
@@ -109,7 +155,6 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
     }
 
     private void initView() {
-        mainContent = findViewById(R.id.main_content);
         viewPager = findViewById(R.id.viewPager);
         initBottomBar();
         btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -119,6 +164,11 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
             finish();
             return;
         }
+        initBluetooth();
+    }
+
+
+    private void initBluetooth() {
         initService();
         // retrieve last connected BT device, this needs to be set up for quick autoconnect
         lastDeviceAddress = DevicePreferences.getLastDevice(getApplicationContext());
@@ -126,6 +176,41 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
         if (lastDeviceAddress != null && btAdapter.isEnabled()) {
             btDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(lastDeviceAddress);
         }
+
+        handler = new Handler();
+        // Use this check to determine whether BLE is supported on the device.  Then you can
+        // selectively disable BLE-related features.
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            showCenterInfoMsg("设备不支持");
+            finish();
+        }
+
+        // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
+        // BluetoothAdapter through BluetoothManager.
+        final BluetoothManager bluetoothManager =
+                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        bluetoothAdapter = bluetoothManager.getAdapter();
+
+        // Checks if Bluetooth is supported on the device.
+        if (bluetoothAdapter == null) {
+            showCenterInfoMsg("设备不支持");
+            finish();
+        }
+        reqPermission(Permission.ACCESS_COARSE_LOCATION);
+    }
+
+    private void reqPermission(@NonNull String currentPermission) {
+        AndPermission.with(this)
+                .runtime()
+                .permission(currentPermission)
+                .onGranted(permissions -> {
+                    reqPermission(Permission.ACCESS_FINE_LOCATION);
+                })
+                .onDenied(permissions -> {
+                    // Storage permission are not allowed.
+                    reqPermission(currentPermission);
+                })
+                .start();
     }
 
     private void initBottomBar() {
@@ -174,52 +259,44 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
     }
 
 
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(BleEvent event) {
         String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
         switch (event.getCurrentEvent()) {
+            case BleEvent.ACTION_SEND_MSG:
+                if (uartService!=null&&uartService.initialize())
+                {
+                    uartService.writeRXCharacteristic(event.getValue());
+                }
+                break;
             case BleEvent.ACTION_GATT_CONNECTED:
+                currentStatus = UART_PROFILE_CONNECTED;
                 Log.d(TAG, "UART_CONNECT_MSG");
-                /*btnConnectDisconnect.setText("Disconnect");
-                edtMessage.setEnabled(true);
-                btnSend.setEnabled(true);
-                ((TextView) findViewById(R.id.deviceName)).setText(btDevice.getName() + " - ready");
-                listAdapter.add("[" + currentDateTimeString + "] Connected to: " + btDevice.getName());
-                messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
-                currentStatus = UART_PROFILE_CONNECTED;*/
+                String connectedMsg = "[" + currentDateTimeString + "] Connected to: " + btDevice.getName();
+                Log.d(TAG, connectedMsg);
                 break;
             case BleEvent.ACTION_GATT_DISCONNECTED:
-            /*    Log.d(TAG, "UART_DISCONNECT_MSG");
-                btnConnectDisconnect.setText("Connect");
-                edtMessage.setEnabled(false);
-                btnSend.setEnabled(false);
-                ((TextView) findViewById(R.id.deviceName)).setText("Not Connected");
-                listAdapter.add("[" + currentDateTimeString + "] Disconnected to: " + btDevice.getName());
                 currentStatus = UART_PROFILE_DISCONNECTED;
+                Log.d(TAG, "UART_DISCONNECT_MSG");
+                String disconnectMsg = "[" + currentDateTimeString + "] Disconnected to: " + btDevice.getName();
+                Logger.e(TAG, disconnectMsg);
                 uartService.close();
-                tryConnectBT();*/ // try to reconnect, if needed
-                //setUiState();
                 break;
             case BleEvent.ACTION_GATT_SERVICES_DISCOVERED:
                 uartService.enableTXNotification();
                 break;
             case BleEvent.ACTION_DATA_AVAILABLE:
-               /* try {
-                    String text = new String(event.getValue(), StandardCharsets.UTF_8);
-                    listAdapter.add("[" + currentDateTimeString + "] RX: " + text);
-                    messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
-                    commitToFile("[" + currentDateTimeString + "] RX: " + text);
-
-                } catch (Exception e) {
-                    Log.e(TAG, e.toString());
-                }*/
+                String text = new String(event.getValue(), StandardCharsets.UTF_8);
+                Logger.e(TAG, text);
                 break;
             case BleEvent.DEVICE_DOES_NOT_SUPPORT_UART:
-                showMessage("Device doesn't support UART. Disconnecting");
+                String notsupport = "Device doesn't support UART. Disconnecting";
+                showMessage(notsupport);
                 uartService.disconnect();
+                Logger.e(TAG, notsupport);
                 break;
             default:
+
                 break;
 
         }
@@ -235,7 +312,6 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
         if (lastDeviceAddress == null) {
             return; // we have nothing to connect to..
         }
-
         final Handler handler = new Handler();
         final Runnable runner = new Runnable() {
             @Override public void run() {
@@ -244,7 +320,8 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
                     return;
                 }
                 if (!isBTConnected()) {
-                    uartService.connect(lastDeviceAddress);
+                    boolean isConnected = uartService.connect(lastDeviceAddress);
+                    Log.d(TAG, "tryConnectBT isConnected：" + isConnected);
                 }
                 if (!isBTConnected()) {
                     Log.d(TAG, "Failed to connect, try again later..");
@@ -255,32 +332,22 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
         handler.postDelayed(runner, 100);
     }
 
-    private void commitToFile(String loggedText) throws IOException {
-        FileOutputStream fOut = openFileOutput("savedData.txt",
-                MODE_APPEND);
-        OutputStreamWriter osw = new OutputStreamWriter(fOut);
-        osw.write(loggedText);
-        osw.flush();
-        osw.close();
-    }
-
     private void initService() {
         Intent bindIntent = new Intent(this, UartService.class);
-        bindService(bindIntent, this, Context.BIND_AUTO_CREATE);
+        bindService(bindIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         tryConnectBT();
-
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy()");
-        unbindService(this);
+        unbindService(serviceConnection);
         uartService.stopSelf();
         uartService = null;
 
@@ -297,6 +364,7 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
         Log.d(TAG, "onPause");
         super.onPause();
         isForeground = false;
+        scanLeDevice(false);
     }
 
     @Override
@@ -311,12 +379,13 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
         isForeground = true;
         Log.d(TAG, "onResume");
         if (!btAdapter.isEnabled()) {
-            Log.i(TAG, "onResume - BT not enabled yet");
+            Log.i(TAG, "onClick - BT not enabled yet");
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         }
-
+        scanLeDevice(true);
     }
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -342,10 +411,9 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
                     ((TextView) findViewById(R.id.deviceName)).setText(btDevice.getName() + " - connecting");
                     // store connected device
                     Log.d(TAG, "..storing lastDeviceAddress= " + deviceAddress);
+                    lastDeviceAddress = deviceAddress;
                     DevicePreferences.setLastDevice(getApplicationContext(), deviceAddress);
                     uartService.connect(lastDeviceAddress);
-
-
                 }
                 break;
             case REQUEST_ENABLE_BT:
@@ -389,30 +457,12 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("系统消息！")
                     .setMessage("确定退出嘛？")
-                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    })
+                    .setPositiveButton("确定", (dialog, which) -> finish())
                     .setNegativeButton("取消", null)
                     .show();
         }
     }
 
-    @Override public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        uartService = ((UartService.LocalBinder) iBinder).getService();
-        Log.d(TAG, "onServiceConnected uartService= " + uartService);
-        if (!uartService.initialize()) {
-            Log.e(TAG, "Unable to initialize Bluetooth");
-            finish();
-        }
-    }
-
-    @Override public void onServiceDisconnected(ComponentName componentName) {
-        //uartService.disconnect(btDevice);
-        uartService = null;
-    }
 
     @Override public void onClick(View view) {
         switch (view.getId()) {
@@ -451,6 +501,27 @@ public class HomeAct extends BaseActivity  implements RadioGroup.OnCheckedChange
             default:
                 break;
         }
+    }
+
+    private void scanLeDevice(final boolean enable) {
+        if (enable) {
+            // Stops scanning after a pre-defined scan period.
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    isScanning = false;
+                    bluetoothAdapter.stopLeScan(leScanCallback);
+
+                }
+            }, SCAN_PERIOD);
+
+            isScanning = true;
+            bluetoothAdapter.startLeScan(leScanCallback);
+        } else {
+            isScanning = false;
+            bluetoothAdapter.stopLeScan(leScanCallback);
+        }
+
     }
 
 
