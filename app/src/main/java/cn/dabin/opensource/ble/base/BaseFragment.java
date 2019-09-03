@@ -11,12 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
 
-import org.greenrobot.eventbus.EventBus;
-
-import java.nio.charset.StandardCharsets;
-
-import cn.dabin.opensource.ble.event.BleEvent;
-import cn.dabin.opensource.ble.util.StringUtils;
+import cn.dabin.opensource.ble.util.SharedPreUtil;
 import github.opensource.dialog.BeToastUtil;
 
 /**
@@ -122,18 +117,19 @@ public abstract class BaseFragment extends Fragment {
     }
 
 
-    public void sendMessage(String message) {
-        if (StringUtils.isEmpty(message)) {
-            return;
-        }
-        byte[] value;
-        //send data to service
-        value = message.getBytes(StandardCharsets.UTF_8);
-        EventBus.getDefault().post(new BleEvent(BleEvent.ACTION_SEND_MSG, value));
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
     }
+
+
+    public String readMac() {
+        return SharedPreUtil.getString(getContext(), "mac", "");
+    }
+
+
+    public void saveMac(String mac) {
+        SharedPreUtil.saveString(getContext(), "mac", mac);
+    }
+
 }

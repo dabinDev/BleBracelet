@@ -8,10 +8,14 @@ import com.lzy.okgo.cache.CacheMode;
 import com.lzy.okgo.cookie.CookieJarImpl;
 import com.lzy.okgo.cookie.store.SPCookieStore;
 import com.lzy.okgo.interceptor.HttpLoggingInterceptor;
+import com.vise.baseble.ViseBle;
+
+import org.litepal.LitePal;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import cn.dabin.opensource.ble.network.bean.BleInfo;
 import cn.jpush.android.api.JPushInterface;
 import okhttp3.OkHttpClient;
 
@@ -26,12 +30,22 @@ import okhttp3.OkHttpClient;
  */
 public class BleApplication extends Application {
 
+
     @Override public void onCreate() {
         super.onCreate();
-
         JPushInterface.setDebugMode(true);    // 设置开启日志,发布时请关闭日志
         JPushInterface.init(this);            // 初始化 JPush
+        LitePal.initialize(this);
         initOkGo();
+        initBluetooth();
+
+    }
+
+
+
+    public static BleInfo getBleInfo(String macAddress)
+    {
+        return LitePal.where("macAddress=?",macAddress).findFirst(BleInfo.class);
     }
 
 
@@ -59,4 +73,19 @@ public class BleApplication extends Application {
                 .setCacheTime(CacheEntity.CACHE_NEVER_EXPIRE)   //全局统一缓存时间，默认永不过期，可以不传
                 .setRetryCount(3);                            //全局统一超时重连次数，默认为三次，那么最差的情况会请求4次(一次原始请求，三次重连请求)，不需要可以设置为0
     }
+    private void initBluetooth() {
+        //蓝牙相关配置修改
+        ViseBle.config()
+                .setScanTimeout(-1)//扫描超时时间，这里设置为永久扫描
+                .setConnectTimeout(10 * 1000)//连接超时时间
+                .setOperateTimeout(5 * 1000)//设置数据操作超时时间
+                .setConnectRetryCount(3)//设置连接失败重试次数
+                .setConnectRetryInterval(1000)//设置连接失败重试间隔时间
+                .setOperateRetryCount(3)//设置数据操作失败重试次数
+                .setOperateRetryInterval(1000)//设置数据操作失败重试间隔时间
+                .setMaxConnectCount(3);//设置最大连接设备数量
+//蓝牙信息初始化，全局唯一，必须在应用初始化时调用
+        ViseBle.getInstance().init(this);
+    }
+
 }

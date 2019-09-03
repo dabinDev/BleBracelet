@@ -35,7 +35,7 @@ import static cn.dabin.opensource.ble.ui.activity.HomeAct.MESSAGE_RECEIVED_ACTIO
  * Changed time: 2019/8/27 16:11
  * Class description:
  */
-   public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity {
 
     protected Context mContext;
     protected Resources mResource;
@@ -158,6 +158,15 @@ import static cn.dabin.opensource.ble.ui.activity.HomeAct.MESSAGE_RECEIVED_ACTIO
         SharedPreUtil.saveString(this, "token", token);
     }
 
+
+    public String readMac() {
+        return SharedPreUtil.getString(this, "mac", "");
+    }
+
+
+    public void saveMac(String mac) {
+        SharedPreUtil.saveString(this, "mac", mac);
+    }
 
 }
 
