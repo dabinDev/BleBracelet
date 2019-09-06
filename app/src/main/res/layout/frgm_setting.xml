@@ -1,6 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:paddingStart="30dp"
+    android:paddingEnd="30dp"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:text="设置"
+        android:textSize="@dimen/text_size_25"
+        android:textColor="@color/colorSecondaryText"
+        android:gravity="center"
+        android:layout_height="40dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="@drawable/shape_square_blue"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_distance_title"
+            android:layout_width="match_parent"
+            android:text="距离"
+            android:textSize="@dimen/text_size_20"
+            android:textColor="@color/colorWhite"
+            android:gravity="center"
+            android:layout_height="30dp" />
+
+
+        <TextView
+            android:id="@+id/tv_distance_value"
+            android:layout_width="match_parent"
+            android:text="默认 33cm"
+            android:textSize="@dimen/text_size_13"
+            android:textColor="@color/colorWhite"
+            android:gravity="center"
+            android:layout_height="25dp" />
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/rg_distance"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_marginTop="10dp"
+        android:weightSum="3"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_distance_27"
+            style="@style/style_radio_check_label"
+            android:text="27cm" />
+
+        <RadioButton
+            android:id="@+id/radio_distance_31"
+            style="@style/style_radio_check_label"
+            android:checked="true"
+            android:text="31cm" />
+
+
+        <RadioButton
+            android:id="@+id/radio_distance_33"
+            style="@style/style_radio_check_label"
+            android:text="33cm" />
+
+
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="@drawable/shape_square_blue"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_shock_title"
+            android:layout_width="match_parent"
+            android:text="手环震动"
+            android:textSize="@dimen/text_size_20"
+            android:textColor="@color/colorWhite"
+            android:gravity="center"
+            android:layout_height="30dp" />
+
+
+        <TextView
+            android:id="@+id/tv_shock_value"
+            android:layout_width="match_parent"
+            android:text="默认 中"
+            android:textSize="@dimen/text_size_13"
+            android:textColor="@color/colorWhite"
+            android:gravity="center"
+            android:layout_height="25dp" />
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/rg_shock"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_marginTop="10dp"
+        android:weightSum="3"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_shock_low"
+            style="@style/style_radio_check_label"
+            android:text="若" />
+
+        <RadioButton
+            android:id="@+id/radio_shock_middle"
+            style="@style/style_radio_check_label"
+            android:checked="true"
+            android:text="中" />
+
+
+        <RadioButton
+            android:id="@+id/radio_shock_heigh"
+            style="@style/style_radio_check_label"
+            android:text="强" />
+
+
+    </RadioGroup>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="@drawable/shape_square_blue"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_tip_time_title"
+            android:layout_width="match_parent"
+            android:text="提示时间"
+            android:textSize="@dimen/text_size_20"
+            android:textColor="@color/colorWhite"
+            android:gravity="center"
+            android:layout_height="30dp" />
+
+
+        <TextView
+            android:id="@+id/tv_tip_time_value"
+            android:layout_width="match_parent"
+            android:text="默认 2s"
+            android:textSize="@dimen/text_size_13"
+            android:textColor="@color/colorWhite"
+            android:gravity="center"
+            android:layout_height="25dp" />
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/rg_tip_time"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_marginTop="10dp"
+        android:weightSum="3"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_tip_time_low"
+            style="@style/style_radio_check_label"
+            android:text="2s" />
+
+        <RadioButton
+            android:id="@+id/radio_tip_time_middle"
+            style="@style/style_radio_check_label"
+            android:checked="true"
+            android:text="5s" />
+
+
+        <RadioButton
+            android:id="@+id/radio_tip_time_heigh"
+            style="@style/style_radio_check_label"
+            android:text="10s" />
+
+    </RadioGroup>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/btn_do_set"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="30dp"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/shape_square_blue"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="确认设置"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/text_size_19" />
+    </RelativeLayout>
 </LinearLayout>

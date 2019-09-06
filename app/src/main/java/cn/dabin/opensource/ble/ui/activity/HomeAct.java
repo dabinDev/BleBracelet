@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +18,7 @@ import com.vise.baseble.callback.scan.SingleFilterScanCallback;
 import com.vise.baseble.common.PropertyType;
 import com.vise.baseble.model.BluetoothLeDevice;
 import com.vise.baseble.model.BluetoothLeDeviceStore;
+import com.vise.log.ViseLog;
 import com.vise.xsnow.event.BusManager;
 import com.vise.xsnow.event.Subscribe;
 import com.yanzhenjie.permission.AndPermission;
@@ -42,6 +42,7 @@ import cn.dabin.opensource.ble.ui.fragment.HomeFrgm;
 import cn.dabin.opensource.ble.ui.fragment.MeFrgm;
 import cn.dabin.opensource.ble.ui.fragment.SettingFrgm;
 import cn.dabin.opensource.ble.util.BluetoothDeviceManager;
+import cn.dabin.opensource.ble.util.Logger;
 import cn.dabin.opensource.ble.util.StringUtils;
 import github.benjamin.bottombar.NavigationController;
 import github.benjamin.bottombar.PageNavigationView;
@@ -58,17 +59,20 @@ import github.benjamin.bottombar.tabs.SpecialTabRound;
  * Changed time: 2019/8/27 14:28
  * Class description:
  */
-public class HomeAct extends BaseActivity {
-    public static final UUID NOTICE_SERVICE_UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
-    public static final UUID NOTICE_CHAR_UUID = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
+public class HomeAct extends BaseActivity implements IScanCallback {
+    public static final UUID DFU_SERVICE_UUID = UUID.fromString("8e400001-f315-4f60-9fb8-838830daea50");//空中升级DFU
+    public static final UUID DFU_CHAR_UUID = UUID.fromString("8e400001-f315-4f60-9fb8-838830daea50");//空中升级DFU
+
+    public static final UUID TX_SERVICE_UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");//UART TX(BLE发送)
+    public static final UUID TX_CHAR_UUID = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");//UART TX(BLE发送)
+
+    public static final UUID RX_SERVICE_UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");//UART RX(BLE接收)
+    public static final UUID RX_CHAR_UUID = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");//UART RX(BLE接收)
+
+    public static final UUID SYSTEM_SERVICE_UUID = UUID.fromString("0000180a-0000-1000-8000-00805f9b34fb");//System ID (MAC地址)  高版本兼容
+    public static final UUID SYSTEM_CHAR_UUID = UUID.fromString("00002A23-0000-1000-8000-00805F9B34FB");//System ID (MAC地址)  高版本兼容
 
 
-    public static final UUID READ_SERVICE_UUID = UUID.fromString("0000180a-0000-1000-8000-00805f9b34fb");
-    public static final UUID READ_CHAR_UUID = UUID.fromString("00002a23-0000-1000-8000-00805f9b34fb");
-
-
-    public static final UUID WRITE_SERVICE_UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
-    public static final UUID WRITE_CHAR_UUID = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
     private final String TAG = HomeAct.this.getClass().getName();
     private BluetoothLeDevice currentDevice = null;
     public static final String MESSAGE_RECEIVED_ACTION = "cn.dabin.opensource.ble.MESSAGE_RECEIVED_ACTION";
@@ -98,7 +102,6 @@ public class HomeAct extends BaseActivity {
         BluetoothDeviceManager.getInstance().init(this);
         BusManager.getBus().register(this);
         initBottomBar();
-        reqPermission(Permission.ACCESS_COARSE_LOCATION);
     }
 
 
@@ -151,33 +154,35 @@ public class HomeAct extends BaseActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy()");
+        ViseLog.d(TAG, "onDestroy()");
         BusManager.getBus().unregister(this);
+        BluetoothDeviceManager.getInstance().disconnect(currentDevice);
     }
 
     @Override
     protected void onStop() {
-        Log.d(TAG, "onStop");
+        ViseLog.d(TAG, "onStop");
         super.onStop();
     }
 
     @Override
     protected void onPause() {
-        Log.d(TAG, "onPause");
+        ViseLog.d(TAG, "onPause");
         super.onPause();
         isForeground = false;
     }
 
     @Override
     protected void onRestart() {
+        ViseLog.d(TAG, "onRestart");
         super.onRestart();
-        Log.d(TAG, "onRestart");
     }
 
     @Override
     public void onResume() {
         super.onResume();
         isForeground = true;
+        reqPermission(Permission.ACCESS_COARSE_LOCATION);
     }
 
 
@@ -214,110 +219,69 @@ public class HomeAct extends BaseActivity {
 
     private void scanDevice() {
         //该方式是扫到指定设备就停止扫描
-        ViseBle.getInstance().startScan(new SingleFilterScanCallback(callback).setDeviceName("MB0002"));
+        ViseBle.getInstance().startScan(new SingleFilterScanCallback(HomeAct.this).setDeviceName("MB0002"));
     }
 
 
     public void sendMsg(String msg) {
-        byte[] value;
-        //send data to service
-        value = msg.getBytes(StandardCharsets.UTF_8);
-        BluetoothDeviceManager.getInstance().write(currentDevice, value);
+        runOnUiThread(() -> {
+            byte[] value;
+            //send data to service
+            value = msg.getBytes(StandardCharsets.UTF_8);
+            if (BluetoothDeviceManager.getInstance().isConnected(currentDevice)) {
+                BluetoothDeviceManager.getInstance().write(currentDevice, value);
+            } else {
+                Logger.e(TAG, "当前蓝牙设备还未连接！");
+            }
+        });
     }
-
-
-    IScanCallback callback = new IScanCallback() {
-
-        @Override public void onDeviceFound(BluetoothLeDevice bluetoothLeDevice) {
-            Log.e(TAG, StringUtils.value(bluetoothLeDevice.getName()) + bluetoothLeDevice.getAddress());
-            if (StringUtils.value(bluetoothLeDevice.getName()).equals("MB0002")) {
-                String address=StringUtils.value(bluetoothLeDevice.getAddress());
-                BleInfo info= BleApplication.getBleInfo(address);
-                if (info==null)
-                {
-                    info=new BleInfo();
-                    info.setMacAddress(address);
-                    info.setDeviceName(bluetoothLeDevice.getName());
-                    info.saveOrUpdate("macAddress=?",address);
-                }
-                ViseBle.getInstance().stopScan(new SingleFilterScanCallback(callback));
-                currentDevice = bluetoothLeDevice;
-                if (!BluetoothDeviceManager.getInstance().isConnected(currentDevice)) {
-                    BluetoothDeviceManager.getInstance().connect(currentDevice);
-                } else {
-                    Log.e(TAG, "当前设备已经连接！");
-                }
-            }
-        }
-
-        @Override public void onScanFinish(BluetoothLeDeviceStore bluetoothLeDeviceStore) {
-            Log.e(TAG, "onScanFinish");
-        }
-
-        @Override public void onScanTimeout() {
-            if (currentDevice == null) {
-                Log.e(TAG, "蓝牙扫描超时！");
-                return;
-            }
-            if (!BluetoothDeviceManager.getInstance().isConnected(currentDevice)) {
-                Log.e(TAG, "蓝牙扫描超时！");
-                return;
-            }
-        }
-    };
 
 
     @Subscribe
     public void showConnectedDevice(ConnectEvent event) {
         if (event != null) {
             if (event.isSuccess()) {
-                Log.e(TAG, "   Connect Success! ");
-                invalidateOptionsMenu();
+                Logger.e(TAG, "   Connect Success! ");
+                currentDevice = event.getDeviceMirror().getBluetoothLeDevice();
                 if (event.getDeviceMirror() != null && event.getDeviceMirror().getBluetoothGatt() != null) {
+                    BluetoothGattService service1 = event.getDeviceMirror().getGattService(TX_SERVICE_UUID);
+                    BluetoothGattCharacteristic characteristic1 = service1.getCharacteristic(TX_CHAR_UUID);
+                    int charaProp1 = characteristic1.getProperties();
+                    initNoticeCallBack(service1, characteristic1, charaProp1);
 
-                    currentDevice = event.getDeviceMirror().getBluetoothLeDevice();
-                    //event.getDeviceMirror().getBluetoothGatt().getServices()
-                    BluetoothGattService writeService = event.getDeviceMirror().getGattService(WRITE_SERVICE_UUID);
-                    BluetoothGattCharacteristic writeCharacteristic = writeService.getCharacteristic(WRITE_CHAR_UUID);
-                    final int writeCharaProp = writeCharacteristic.getProperties();
-                    initNoticeCallBack(event, writeService, writeCharacteristic, writeCharaProp);
+                    BluetoothGattService service2 = event.getDeviceMirror().getGattService(RX_SERVICE_UUID);
+                    BluetoothGattCharacteristic characteristic2 = service2.getCharacteristic(RX_CHAR_UUID);
+                    int charaProp2 = characteristic2.getProperties();
+                    initNoticeCallBack(service2, characteristic2, charaProp2);
 
-
-                    BluetoothGattService noticeService = event.getDeviceMirror().getGattService(NOTICE_SERVICE_UUID);
-                    BluetoothGattCharacteristic noticeCharacteristic = noticeService.getCharacteristic(NOTICE_CHAR_UUID);
-                    final int noticecharaProp = noticeCharacteristic.getProperties();
-                    initNoticeCallBack(event, noticeService, noticeCharacteristic, noticecharaProp);
-
-
-                    BluetoothGattService readService = event.getDeviceMirror().getGattService(READ_SERVICE_UUID);
-                    BluetoothGattCharacteristic readCharacteristic = readService.getCharacteristic(READ_CHAR_UUID);
-                    final int readCharaProp = readCharacteristic.getProperties();
-                    initNoticeCallBack(event, readService, readCharacteristic, readCharaProp);
+                    BluetoothGattService service3 = event.getDeviceMirror().getGattService(SYSTEM_SERVICE_UUID);
+                    BluetoothGattCharacteristic characteristic3 = service3.getCharacteristic(SYSTEM_CHAR_UUID);
+                    int charaProp3 = characteristic3.getProperties();
+                    initNoticeCallBack(service3, characteristic3, charaProp3);
                 }
             } else {
                 if (event.isDisconnected()) {
-                    Log.e(TAG, "   isDisconnected   :" + true);
+                    Logger.e(TAG, "   isDisconnected   :" + true);
                 } else {
-                    Log.e(TAG, "   isDisconnected   :" + false);
+                    Logger.e(TAG, "   isDisconnected   :" + false);
                 }
-                invalidateOptionsMenu();
             }
         }
     }
 
-    private void initNoticeCallBack(ConnectEvent event, BluetoothGattService service, BluetoothGattCharacteristic characteristic, int charaProp) {
+    private void initNoticeCallBack(BluetoothGattService service, BluetoothGattCharacteristic characteristic, int charaProp) {
         if ((charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE) > 0) {
-            BluetoothDeviceManager.getInstance().bindChannel(event.getDeviceMirror().getBluetoothLeDevice(), PropertyType.PROPERTY_WRITE, service.getUuid(), characteristic.getUuid(), null);
+            BluetoothDeviceManager.getInstance().bindChannel(currentDevice, PropertyType.PROPERTY_WRITE, service.getUuid(), characteristic.getUuid(), null);
         } else if ((charaProp & BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
-            BluetoothDeviceManager.getInstance().bindChannel(event.getDeviceMirror().getBluetoothLeDevice(), PropertyType.PROPERTY_READ, service.getUuid(), characteristic.getUuid(), null);
-            BluetoothDeviceManager.getInstance().read(event.getDeviceMirror().getBluetoothLeDevice());
+            BluetoothDeviceManager.getInstance().bindChannel(currentDevice, PropertyType.PROPERTY_READ, service.getUuid(), characteristic.getUuid(), null);
+            BluetoothDeviceManager.getInstance().read(currentDevice);
         }
         if ((charaProp & BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-            BluetoothDeviceManager.getInstance().bindChannel(event.getDeviceMirror().getBluetoothLeDevice(), PropertyType.PROPERTY_NOTIFY, service.getUuid(), characteristic.getUuid(), null);
-            BluetoothDeviceManager.getInstance().registerNotify(event.getDeviceMirror().getBluetoothLeDevice(), false);
+            BluetoothDeviceManager.getInstance().bindChannel(currentDevice, PropertyType.PROPERTY_NOTIFY, service.getUuid(), characteristic.getUuid(), null);
+            BluetoothDeviceManager.getInstance().registerNotify(currentDevice, false);
         } else if ((charaProp & BluetoothGattCharacteristic.PROPERTY_INDICATE) > 0) {
-            BluetoothDeviceManager.getInstance().bindChannel(event.getDeviceMirror().getBluetoothLeDevice(), PropertyType.PROPERTY_INDICATE, service.getUuid(), characteristic.getUuid(), null);
-            BluetoothDeviceManager.getInstance().registerNotify(event.getDeviceMirror().getBluetoothLeDevice(), true);
+            BluetoothDeviceManager.getInstance().bindChannel(currentDevice, PropertyType.PROPERTY_INDICATE, service.getUuid(), characteristic.getUuid(), null);
+            BluetoothDeviceManager.getInstance().registerNotify(currentDevice, true);
         }
     }
 
@@ -328,7 +292,7 @@ public class HomeAct extends BaseActivity {
                 if (event.getBluetoothGattChannel() != null && event.getBluetoothGattChannel().getCharacteristic() != null
                         && event.getBluetoothGattChannel().getPropertyType() == PropertyType.PROPERTY_READ) {
                     String msg = new String(event.getData(), StandardCharsets.UTF_8);
-                    Log.e(TAG, "   showDeviceCallbackData   :" + msg);
+                    Logger.e(TAG, "   showDeviceCallbackData   :" + msg);
                 }
             }
         }
@@ -339,10 +303,48 @@ public class HomeAct extends BaseActivity {
         if (event != null && event.getData() != null && event.getBluetoothLeDevice() != null
                 && event.getBluetoothLeDevice().getAddress().equals(currentDevice.getAddress())) {
             String msg = new String(event.getData(), StandardCharsets.UTF_8);
-            Log.e(TAG, "   showDeviceNotifyData    :" + msg);
+            Logger.e(TAG, "   showDeviceNotifyData    :" + msg);
 
         }
     }
 
 
+    @Override public void onDeviceFound(BluetoothLeDevice bluetoothLeDevice) {
+        Logger.e(TAG, StringUtils.value(bluetoothLeDevice.getName()) + bluetoothLeDevice.getAddress());
+        if (StringUtils.value(bluetoothLeDevice.getName()).equals("MB0002")) {
+            ViseBle.getInstance().stopScan(new SingleFilterScanCallback(HomeAct.this));
+            runOnUiThread(() -> {
+                String address = StringUtils.value(bluetoothLeDevice.getAddress());
+                BleInfo info = BleApplication.getBleInfo(address);
+                if (info == null) {
+                    info = new BleInfo();
+                    info.setMacAddress(address);
+                    info.setDeviceName(bluetoothLeDevice.getName());
+                }
+                info.saveOrUpdate("macAddress=?", address);
+                if (!BluetoothDeviceManager.getInstance().isConnected(bluetoothLeDevice)) {
+                    BluetoothDeviceManager.getInstance().connect(bluetoothLeDevice);
+                } else {
+                    Logger.e(TAG, "当前设备已经连接！");
+                }
+            });
+
+        }
+    }
+
+    @Override public void onScanFinish(BluetoothLeDeviceStore bluetoothLeDeviceStore) {
+        Logger.e(TAG, "onScanFinish");
+
+    }
+
+    @Override public void onScanTimeout() {
+        if (currentDevice == null) {
+            Logger.e(TAG, "蓝牙扫描超时！");
+            return;
+        }
+        if (!BluetoothDeviceManager.getInstance().isConnected(currentDevice)) {
+            Logger.e(TAG, "蓝牙扫描超时！");
+            return;
+        }
+    }
 }

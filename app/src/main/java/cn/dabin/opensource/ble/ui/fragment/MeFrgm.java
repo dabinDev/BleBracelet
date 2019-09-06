@@ -1,5 +1,7 @@
 package cn.dabin.opensource.ble.ui.fragment;
 
+import com.gyf.immersionbar.ImmersionBar;
+
 import cn.dabin.opensource.ble.R;
 import cn.dabin.opensource.ble.base.BaseFragment;
 
@@ -20,4 +22,20 @@ public class MeFrgm extends BaseFragment {
     @Override public void onLazyLoad() {
 
     }
+
+    @Override public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            if (this.getActivity()==null)
+            {
+                return;
+            }
+            ImmersionBar.with(this)
+                    .statusBarColor(R.color.color_white)
+                    .statusBarDarkFont(true)
+                    .fullScreen(true)
+                    .init();
+        }
+    }
+
 }

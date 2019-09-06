@@ -19,6 +19,33 @@ public class BleInfo extends LitePalSupport {
     private String macAddress = "";
     private int currentBattery = 100;
     private String lastSysTime = "";
+    private int distance = 100;
+    private int shock = 100;
+    private int tipTime = 100;
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public int getShock() {
+        return shock;
+    }
+
+    public void setShock(int shock) {
+        this.shock = shock;
+    }
+
+    public int getTipTime() {
+        return tipTime;
+    }
+
+    public void setTipTime(int tipTime) {
+        this.tipTime = tipTime;
+    }
 
     public String getDeviceName() {
         return deviceName;

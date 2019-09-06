@@ -44,11 +44,6 @@ public class DataFagm extends BaseFragment {
     }
 
     private void initView() {
-        ImmersionBar.with(this)
-                .statusBarColor(R.color.color_white)
-                .statusBarDarkFont(true)
-                .fullScreen(true)
-                .init();
         tvEyeDistance = view.findViewById(R.id.tv_eye_distance);
         chart1 = view.findViewById(R.id.chart1);
         tvErrorTime = view.findViewById(R.id.tv_error_time);
@@ -57,6 +52,27 @@ public class DataFagm extends BaseFragment {
         initTestData();
     }
 
+
+    @Override public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            if (chart1 != null) {
+                chart1.animateY(700);
+            }
+            if (chart2 != null) {
+                chart2.animateY(700);
+            }
+            if (this.getActivity()==null)
+            {
+                return;
+            }
+            ImmersionBar.with(this)
+                    .statusBarColor(R.color.color_white)
+                    .statusBarDarkFont(true)
+                    .fullScreen(true)
+                    .init();
+        }
+    }
 
 
     private void initChart() {
@@ -113,18 +129,6 @@ public class DataFagm extends BaseFragment {
     private void initTestData() {
         chart1.setData(generateDataLine(0));
         chart2.setData(generateDataLine(1));
-    }
-
-    @Override public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            if (chart1 != null) {
-                chart1.animateY(700);
-            }
-            if (chart2 != null) {
-                chart2.animateY(700);
-            }
-        }
     }
 
     private LineData generateDataLine(int cnt) {

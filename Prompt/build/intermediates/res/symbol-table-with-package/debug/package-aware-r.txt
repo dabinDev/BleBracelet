@@ -874,8 +874,6 @@ drawable default_toast
 drawable error_toast
 drawable ic_error
 drawable ic_laba_voice
-drawable ic_launcher_background
-drawable ic_launcher_foreground
 drawable ic_prompt_alert_warn
 drawable ic_prompt_close
 drawable ic_prompt_done
@@ -1098,7 +1096,6 @@ layout support_simple_spinner_dropdown_item
 layout warning_toast_layout
 mipmap ic_done
 mipmap ic_launcher
-mipmap ic_launcher_round
 mipmap ic_wrong
 string abc_action_bar_home_description
 string abc_action_bar_up_description

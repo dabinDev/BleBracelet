@@ -1,17 +1,18 @@
 package cn.dabin.opensource.ble.ui.fragment;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bigkoo.pickerview.builder.TimePickerBuilder;
+import com.bigkoo.pickerview.listener.OnTimeSelectListener;
+import com.bigkoo.pickerview.view.TimePickerView;
 import com.gyf.immersionbar.ImmersionBar;
 import com.vise.xsnow.event.BusManager;
 import com.vise.xsnow.event.Subscribe;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
@@ -24,7 +25,10 @@ import cn.dabin.opensource.ble.event.NotifyDataEvent;
 import cn.dabin.opensource.ble.global.BleApplication;
 import cn.dabin.opensource.ble.network.bean.BleInfo;
 import cn.dabin.opensource.ble.ui.activity.HomeAct;
+import cn.dabin.opensource.ble.util.Logger;
 import cn.dabin.opensource.ble.util.StringUtils;
+
+import static com.vise.utils.handler.HandlerUtil.runOnUiThread;
 
 /**
  * Project :  BleBracelet.
@@ -35,7 +39,7 @@ import cn.dabin.opensource.ble.util.StringUtils;
  * Changed time: 2019/8/27 16:26
  * Class description:
  */
-public class HomeFrgm extends BaseFragment {
+public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTimeSelectListener {
     private RelativeLayout topPanel;
     private LinearLayout llTop1;
     private ImageView tvToLast;
@@ -54,37 +58,40 @@ public class HomeFrgm extends BaseFragment {
     private TextView tvErrorUse;
     private TextView tvLongUseTime;
     private TextView tvUseDistanceUse;
+    private TimePickerView pvTime;
+    private String currentMsgTag = "";
+    private final String TAG = HomeFrgm.this.getClass().getName();
 
     @Override protected int getLayoutId() {
         BusManager.getBus().register(this);
         return R.layout.frgm_home;
     }
 
-
-    @Override public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-
     @Override public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            ImmersionBar.with(this)
+            reqBleData();
+            if (this.getActivity() == null) {
+                return;
+            }
+            ImmersionBar.with(HomeFrgm.this)
                     .statusBarView(R.id.topPanel)
                     .statusBarColor(R.color.colorStatusBarBlue)
                     .statusBarDarkFont(false)
                     .fullScreen(true)
                     .init();
-            reqBleData();
         }
     }
 
     private void reqBleData() {
         ((HomeAct) getActivity()).sendMsg("v");
+        ((HomeAct) getActivity()).sendMsg("a");
+
     }
 
-    @SuppressLint("StringFormatInvalid") @Subscribe
+    @Subscribe
     public void showDeviceNotifyData(NotifyDataEvent event) throws UnsupportedEncodingException {
+        Logger.e(TAG, StringUtils.value(event.getBluetoothLeDevice().getName()) + event.getBluetoothLeDevice().getAddress());
         if (event != null && event.getData() != null && event.getBluetoothLeDevice() != null) {
             String msg = new String(event.getData(), "GBK").toLowerCase();
             if (StringUtils.value(msg).contains("v:") && StringUtils.value(msg).contains("mv")) {
@@ -100,13 +107,17 @@ public class HomeFrgm extends BaseFragment {
                 }
                 String time = DateFormat.getTimeInstance().format(new Date());
                 tvLastResetTime.setText(StringUtils.value("上次同步时间:" + time));
-                BleInfo info = BleApplication.getBleInfo(readMac());
-                if (info == null) {
-                    info = new BleInfo();
-                }
-                info.setCurrentBattery((int) battary);
-                info.save();
+                double finalBattary = battary;
+                runOnUiThread(() -> {
+                    BleInfo info = BleApplication.getBleInfo(readMac());
+                    if (info == null) {
+                        info = new BleInfo();
+                    }
+                    info.setCurrentBattery((int) finalBattary);
+                    info.save();
+                });
             }
+        } else if (event != null && event.getData() != null && event.getBluetoothLeDevice() != null) {
 
         }
     }
@@ -132,7 +143,33 @@ public class HomeFrgm extends BaseFragment {
         tvErrorUse = view.findViewById(R.id.tv_error_use);
         tvLongUseTime = view.findViewById(R.id.tv_long_use_time);
         tvUseDistanceUse = view.findViewById(R.id.tv_use_distance_use);
-        String time= DateFormat.getTimeInstance(DateFormat.FULL, Locale.SIMPLIFIED_CHINESE).format(new Date());
+        tvToLast.setOnClickListener(this);
+        tvHomeTime.setOnClickListener(this);
+        tvToNext.setOnClickListener(this);
+        //时间选择器
+        pvTime = new TimePickerBuilder(getContext(), this)
+                .setType(new boolean[]{true, true, true, false, false, false})// 默认全部显示
+                .setBgColor(getResources().getColor(R.color.color_white))
+                .setCancelText("取消")//取消按钮文字
+                .setSubmitText("确定")//确认按钮文字
+                .setContentTextSize(18)//设置滚轮中间文字
+                .setTitleSize(20)//标题文字大小
+                .setTitleText("Title")//标题文字
+                .setOutSideCancelable(false)//点击屏幕，点在控件外部范围时，是否取消显示
+                .isCyclic(true)//是否循环滚动
+                .setTitleText("选择日期")
+                .setDividerColor(getResources().getColor(R.color.colorSecondaryText))
+                .setTitleColor(getResources().getColor(R.color.colorSecondaryText))//标题文字颜色
+                .setSubmitColor(getResources().getColor(R.color.colorPrimary))//确定按钮文字颜色
+                .setCancelColor(getResources().getColor(R.color.colorSecondaryText))//取消按钮文字颜色
+                .setTitleBgColor(getResources().getColor(R.color.colorDividerGray))//标题背景颜色 Night mode
+                .setBgColor(getResources().getColor(R.color.colorBg))//滚轮背景颜色 Night mode
+                //.setRangDate(startDate, endDate)//起始终止年月日设定
+                .setLabel("年", "月", "日", "时", "分", "秒")//默认设置为年月日时分秒
+                .isCenterLabel(true) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
+                .isDialog(false)//是否显示为对话框样式
+                .build();
+        String time = DateFormat.getTimeInstance(DateFormat.FULL, Locale.SIMPLIFIED_CHINESE).format(new Date());
 
         tvTodayTime.setText(time);
         if (StringUtils.isNotEmpty(readMac())) {
@@ -145,6 +182,25 @@ public class HomeFrgm extends BaseFragment {
 
     @Override public void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
+        BusManager.getBus().unregister(this);
+    }
+
+    @Override public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.tv_to_last:
+                break;
+            case R.id.tv_home_time:
+                pvTime.show();
+                break;
+            case R.id.tv_to_next:
+                break;
+            default:
+                break;
+
+        }
+    }
+
+    @Override public void onTimeSelect(Date date, View v) {
+
     }
 }

@@ -1,6 +1,140 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="wrap_content"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBg"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:text="我的"
+        android:background="@color/colorWhite"
+        android:textSize="@dimen/text_size_25"
+        android:textColor="@color/colorSecondaryText"
+        android:gravity="center"
+        android:layout_height="40dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:background="@color/colorDividerGray"
+        android:layout_height="0.5dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="@mipmap/bg_me_header"
+        android:padding="30dp"
+        android:layout_height="wrap_content">
+
+        <github.opensource.dialog.sneaker.RoundedImageView
+            android:id="@+id/iv_head"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:clickable="false"
+            android:layout_gravity="center"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:src="@mipmap/ic_user_header" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_marginStart="30dp"
+            android:gravity="center_vertical"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_nickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center_vertical|start"
+                android:lines="1"
+                android:maxEms="8"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/text_size_20"
+                android:text="顾小弋" />
+
+            <TextView
+                android:id="@+id/tv_work_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center|left"
+                android:textColor="@color/colorSecondaryText"
+                android:textSize="@dimen/text_size_17"
+                android:text="已解决工单20" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:background="@color/colorWhite"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_scaner"
+            style="@style/me_fragment_item_text_style"
+            android:drawableStart="@mipmap/ic_me_baby"
+            android:drawableEnd="@mipmap/enter"
+            android:text="宝贝信息" />
+
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/colorDividerGray"
+            android:layout_marginStart="50dp"
+            android:layout_height="0.5dp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_search"
+            style="@style/me_fragment_item_text_style"
+            android:drawableStart="@mipmap/ic_me_update"
+            android:drawableEnd="@mipmap/enter"
+            android:text="系统升级" />
+
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/colorDividerGray"
+            android:layout_marginStart="50dp"
+            android:layout_height="0.5dp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_help"
+            style="@style/me_fragment_item_text_style"
+            android:drawableStart="@mipmap/ic_me_des"
+            android:drawableEnd="@mipmap/enter"
+            android:gravity="start|center_vertical"
+            android:text="使用说明" />
+
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/colorDividerGray"
+            android:layout_marginStart="50dp"
+            android:layout_height="0.5dp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_share"
+            style="@style/me_fragment_item_text_style"
+            android:drawableStart="@mipmap/ic_me_about"
+            android:drawableEnd="@mipmap/enter"
+            android:text="关于迈宝" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_unlogin"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/shape_square_solid"
+        android:clickable="true"
+        android:gravity="center"
+        android:text="退出登录"
+        android:textColor="@color/colorSecondaryText"
+        android:textSize="@dimen/text_size_19" />
+
 
 </LinearLayout>

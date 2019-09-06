@@ -74,7 +74,7 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="right|center_vertical"
                 android:gravity="center_vertical"
-                android:text="8月20日"
+                android:text="[星位]"
                 android:textColor="@color/color_white" />
 
         </RelativeLayout>

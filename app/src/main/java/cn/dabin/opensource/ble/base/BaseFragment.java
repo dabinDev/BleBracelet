@@ -32,6 +32,7 @@ public abstract class BaseFragment extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         lazyLoad();
+
     }
 
 

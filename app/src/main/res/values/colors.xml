@@ -6,11 +6,12 @@
     <color name="colorBg">#f7f7f7</color>
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecondaryText">#727272</color>
-    <color name="colorDividerGray">#f8f8f8</color>
+    <color name="colorDividerGray">#BCC5D4</color>
     <color name="colorDividerYellow">#ec6200</color>
     <color name="colorAlbumText">#99FFFFFF</color>
     <color name="colorImageSelect">#000000</color>
     <color name="colorStatusBarBlue">#4eb8e4</color>
+
     <!--相册状态栏-->
     <color name="colorButtonText">#FFFFFF</color>
     <color name="colorPrimary">#689DF8</color>
@@ -20,5 +21,6 @@
     <color name="colorLabelBg">#aacf52</color>
     <color name="colorLoginBtnBlue">#67cce0</color>
     <color name="colorLoginBtnGray">#b8bfcc</color>
+    <color name="colorBgGray">#edf0ff</color>
 
 </resources>

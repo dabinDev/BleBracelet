@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <solid android:color="@color/colorSecondaryText" />
+    <padding android:left="20dp" />
+    <padding android:top="50dp" />
+    <padding android:right="1dp" />
+    <padding android:bottom="80dp" />
+    <!-- 分割线的高度 -->
+    <size android:height="0.5dip" />
+
+</shape>

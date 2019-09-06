@@ -48,11 +48,6 @@ public class GuardianFagm extends BaseFragment {
 
 
     private void initView() {
-        ImmersionBar.with(this)
-                .statusBarColor(R.color.color_white)
-                .statusBarDarkFont(true)
-                .fullScreen(true)
-                .init();
         circleprogressbarCpbDemo = view.findViewById(R.id.circleprogressbar_cpb_demo);
         chart = view.findViewById(R.id.chart);
         tvUnnormal = view.findViewById(R.id.tv_unnormal);
@@ -64,12 +59,22 @@ public class GuardianFagm extends BaseFragment {
     }
 
 
+
     @Override public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             if (chart != null) {
                 chart.animateY(700);
             }
+            if (this.getActivity()==null)
+            {
+                return;
+            }
+            ImmersionBar.with(this)
+                    .statusBarColor(R.color.color_white)
+                    .statusBarDarkFont(true)
+                    .fullScreen(true)
+                    .init();
         }
     }
 
