@@ -17,7 +17,6 @@ import com.vise.baseble.utils.HexUtil;
 import com.vise.log.ViseLog;
 import com.vise.xsnow.event.BusManager;
 
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
@@ -98,8 +97,7 @@ public class BluetoothDeviceManager {
             if (data == null) {
                 return;
             }
-            String msg = new String(data, StandardCharsets.UTF_8);
-            ViseLog.i("callback success:" + msg);
+            ViseLog.i("callback success:" + HexUtil.encodeHexStr(data));
             BusManager.getBus().post(callbackDataEvent.setData(data).setSuccess(true)
                     .setBluetoothLeDevice(bluetoothLeDevice)
                     .setBluetoothGattChannel(bluetoothGattInfo));

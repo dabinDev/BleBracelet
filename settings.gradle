@@ -1,2 +1,1 @@
-include ':app', ':Bottombar', ':Prompt', ':MPChartLib'
-rootProject.name='BleBracelet'
+include ':app', ':Bottombar', ':Prompt', ':MPChartLib', ':dfu', ':baseble'

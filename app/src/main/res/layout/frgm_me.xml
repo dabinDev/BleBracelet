@@ -74,7 +74,7 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_scaner"
+            android:id="@+id/tv_baby"
             style="@style/me_fragment_item_text_style"
             android:drawableStart="@mipmap/ic_me_baby"
             android:drawableEnd="@mipmap/enter"
@@ -87,7 +87,7 @@
             android:layout_height="0.5dp" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_search"
+            android:id="@+id/tv_update"
             style="@style/me_fragment_item_text_style"
             android:drawableStart="@mipmap/ic_me_update"
             android:drawableEnd="@mipmap/enter"
@@ -100,7 +100,7 @@
             android:layout_height="0.5dp" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_help"
+            android:id="@+id/tv_desc"
             style="@style/me_fragment_item_text_style"
             android:drawableStart="@mipmap/ic_me_des"
             android:drawableEnd="@mipmap/enter"
@@ -114,7 +114,7 @@
             android:layout_height="0.5dp" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_share"
+            android:id="@+id/tv_about"
             style="@style/me_fragment_item_text_style"
             android:drawableStart="@mipmap/ic_me_about"
             android:drawableEnd="@mipmap/enter"

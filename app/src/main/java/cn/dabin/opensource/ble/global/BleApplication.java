@@ -74,8 +74,9 @@ public class BleApplication extends Application {
                 .setRetryCount(3);                            //全局统一超时重连次数，默认为三次，那么最差的情况会请求4次(一次原始请求，三次重连请求)，不需要可以设置为0
     }
     private void initBluetooth() {
-        //蓝牙相关配置修改
+   /*     //蓝牙相关配置修改
         ViseBle.config()
+                .setScanRepeatInterval(5 * 1000)//扫描间隔5秒
                 .setScanTimeout(5 * 1000)//扫描超时时间，这里设置为永久扫描
                 .setConnectTimeout(10 * 1000)//连接超时时间
                 .setOperateTimeout(5 * 1000)//设置数据操作超时时间
@@ -83,9 +84,10 @@ public class BleApplication extends Application {
                 .setConnectRetryInterval(1000)//设置连接失败重试间隔时间
                 .setOperateRetryCount(3)//设置数据操作失败重试次数
                 .setOperateRetryInterval(1000)//设置数据操作失败重试间隔时间
-                .setMaxConnectCount(1);//设置最大连接设备数量
+                .setMaxConnectCount(1);//设置最大连接设备数量*/
 //蓝牙信息初始化，全局唯一，必须在应用初始化时调用
         ViseBle.getInstance().init(this);
+
     }
 
 }

@@ -1,6 +1,7 @@
 package cn.dabin.opensource.ble.ui.fragment;
 
 import android.annotation.SuppressLint;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -12,20 +13,15 @@ import com.bigkoo.pickerview.listener.OnTimeSelectListener;
 import com.bigkoo.pickerview.view.TimePickerView;
 import com.gyf.immersionbar.ImmersionBar;
 import com.vise.xsnow.event.BusManager;
-import com.vise.xsnow.event.Subscribe;
 
-import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import cn.dabin.opensource.ble.R;
 import cn.dabin.opensource.ble.base.BaseFragment;
-import cn.dabin.opensource.ble.event.NotifyDataEvent;
 import cn.dabin.opensource.ble.global.BleApplication;
 import cn.dabin.opensource.ble.network.bean.BleInfo;
 import cn.dabin.opensource.ble.ui.activity.HomeAct;
-import cn.dabin.opensource.ble.util.Logger;
 import cn.dabin.opensource.ble.util.StringUtils;
 
 import static com.vise.utils.handler.HandlerUtil.runOnUiThread;
@@ -39,7 +35,7 @@ import static com.vise.utils.handler.HandlerUtil.runOnUiThread;
  * Changed time: 2019/8/27 16:26
  * Class description:
  */
-public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTimeSelectListener {
+public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTimeSelectListener, HomeAct.BleCallBack {
     private RelativeLayout topPanel;
     private LinearLayout llTop1;
     private ImageView tvToLast;
@@ -62,6 +58,7 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
     private String currentMsgTag = "";
     private final String TAG = HomeFrgm.this.getClass().getName();
 
+
     @Override protected int getLayoutId() {
         BusManager.getBus().register(this);
         return R.layout.frgm_home;
@@ -70,10 +67,11 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
     @Override public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            reqBleData();
             if (this.getActivity() == null) {
                 return;
             }
+            ((HomeAct) getActivity()).setCallBack(this);
+            reqBleData();
             ImmersionBar.with(HomeFrgm.this)
                     .statusBarView(R.id.topPanel)
                     .statusBarColor(R.color.colorStatusBarBlue)
@@ -84,44 +82,10 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
     }
 
     private void reqBleData() {
-        ((HomeAct) getActivity()).sendMsg("v");
         ((HomeAct) getActivity()).sendMsg("a");
+        new Handler().postDelayed(() -> ((HomeAct) getActivity()).sendMsg("v"), 200);
 
     }
-
-    @Subscribe
-    public void showDeviceNotifyData(NotifyDataEvent event) throws UnsupportedEncodingException {
-        Logger.e(TAG, StringUtils.value(event.getBluetoothLeDevice().getName()) + event.getBluetoothLeDevice().getAddress());
-        if (event != null && event.getData() != null && event.getBluetoothLeDevice() != null) {
-            String msg = new String(event.getData(), "GBK").toLowerCase();
-            if (StringUtils.value(msg).contains("v:") && StringUtils.value(msg).contains("mv")) {
-                msg = msg.replace("mv", "").replace("v:", "");
-                double battary = Double.valueOf(msg) / 1000;
-                if (battary > 4.1) {
-                    tvBattery.setText(StringUtils.value("当前电量:" + 100 + "%"));
-                } else if (battary < 3.6) {
-                    tvBattery.setText(StringUtils.value("当前电量:" + 17 + "%"));
-                } else {
-                    battary = (battary - 3.6) * 10 * 16.6 + 17;
-                    tvBattery.setText(StringUtils.value("当前电量:" + battary + "%"));
-                }
-                String time = DateFormat.getTimeInstance().format(new Date());
-                tvLastResetTime.setText(StringUtils.value("上次同步时间:" + time));
-                double finalBattary = battary;
-                runOnUiThread(() -> {
-                    BleInfo info = BleApplication.getBleInfo(readMac());
-                    if (info == null) {
-                        info = new BleInfo();
-                    }
-                    info.setCurrentBattery((int) finalBattary);
-                    info.save();
-                });
-            }
-        } else if (event != null && event.getData() != null && event.getBluetoothLeDevice() != null) {
-
-        }
-    }
-
 
     @Override public void onLazyLoad() {
         initView();
@@ -146,6 +110,7 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
         tvToLast.setOnClickListener(this);
         tvHomeTime.setOnClickListener(this);
         tvToNext.setOnClickListener(this);
+        tvReset.setOnClickListener(this);
         //时间选择器
         pvTime = new TimePickerBuilder(getContext(), this)
                 .setType(new boolean[]{true, true, true, false, false, false})// 默认全部显示
@@ -169,12 +134,10 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
                 .isCenterLabel(true) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
                 .isDialog(false)//是否显示为对话框样式
                 .build();
-        String time = DateFormat.getTimeInstance(DateFormat.FULL, Locale.SIMPLIFIED_CHINESE).format(new Date());
-
-        tvTodayTime.setText(time);
         if (StringUtils.isNotEmpty(readMac())) {
             BleInfo info = BleApplication.getBleInfo(readMac());
             tvBattery.setText(StringUtils.value("当前电量:" + info.getCurrentBattery() + "%"));
+
         }
 
     }
@@ -194,6 +157,9 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
                 break;
             case R.id.tv_to_next:
                 break;
+            case R.id.tv_reset:
+                reqBleData();
+                break;
             default:
                 break;
 
@@ -201,6 +167,46 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
     }
 
     @Override public void onTimeSelect(Date date, View v) {
+
+    }
+
+    private void setCurrentDate(Date date) {
+        String time = new SimpleDateFormat("MM月dd日").format(date);
+        tvHomeTime.setText(time);
+
+        //todo
+
+    }
+
+    @Override public void receivedData(String received) {
+        String msg = received.toLowerCase();
+        if (StringUtils.value(msg).contains("v:") && StringUtils.value(msg).contains("mv")) {
+            msg = msg.replace("mv", "").replace("v:", "");
+            double battary = Double.valueOf(msg) / 1000;
+            if (battary > 4.1) {
+                tvBattery.setText(StringUtils.value("当前电量:" + 100 + "%"));
+            } else if (battary < 3.6) {
+                tvBattery.setText(StringUtils.value("当前电量:" + 17 + "%"));
+            } else {
+                battary = (battary - 3.6) * 10 * 16.6 + 17;
+                tvBattery.setText(StringUtils.value("当前电量:" + battary + "%"));
+            }
+            String time = new SimpleDateFormat("MM月dd日 HH:mm").format(new Date());
+            tvLastResetTime.setText(StringUtils.value("上次同步时间:" + time));
+            double finalBattary = battary;
+            runOnUiThread(() -> {
+                BleInfo info = BleApplication.getBleInfo(readMac());
+                if (info == null) {
+                    info = new BleInfo();
+                }
+                info.setCurrentBattery((int) finalBattary);
+                info.save();
+            });
+        }
+    }
+
+    @Override public void disConnected() {
+
 
     }
 }
