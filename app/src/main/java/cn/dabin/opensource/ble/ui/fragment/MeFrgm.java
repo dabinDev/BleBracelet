@@ -10,6 +10,7 @@ import com.gyf.immersionbar.ImmersionBar;
 
 import cn.dabin.opensource.ble.R;
 import cn.dabin.opensource.ble.base.BaseFragment;
+import cn.dabin.opensource.ble.ui.activity.BabyInfoAct;
 import cn.dabin.opensource.ble.ui.activity.HomeAct;
 import github.opensource.dialog.sneaker.RoundedImageView;
 
@@ -49,6 +50,8 @@ public class MeFrgm extends BaseFragment implements View.OnClickListener {
         tvAbout = view.findViewById(R.id.tv_about);
         btnUnlogin = view.findViewById(R.id.btn_unlogin);
         tvUpdate.setOnClickListener(this);
+        tvBaby.setOnClickListener(this);
+        btnUnlogin.setOnClickListener(this);
     }
 
     @Override public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -58,10 +61,13 @@ public class MeFrgm extends BaseFragment implements View.OnClickListener {
                 return;
             }
             ImmersionBar.with(this)
-                    .statusBarColor(R.color.color_white)
+                    .statusBarView(R.id.view)
+                    .statusBarColor(R.color.colorWhite)
+                    .navigationBarEnable(false)
                     .statusBarDarkFont(true)
-                    .fullScreen(true)
                     .init();
+
+
         }
     }
 
@@ -70,6 +76,13 @@ public class MeFrgm extends BaseFragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.tv_update:
                 ((HomeAct) getActivity()).sendMsg("v");
+                break;
+            case R.id.tv_baby:
+                BabyInfoAct.openAct(getContext());
+                break;
+            case R.id.btn_unlogin:
+                removeToken();
+                getActivity().finish();
                 break;
             default:
                 break;

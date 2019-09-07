@@ -63,18 +63,20 @@ public class GuardianFagm extends BaseFragment {
     @Override public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            if (chart != null) {
-                chart.animateY(700);
-            }
             if (this.getActivity()==null)
             {
                 return;
             }
             ImmersionBar.with(this)
-                    .statusBarColor(R.color.color_white)
+                    .statusBarView(R.id.view)
+                    .statusBarColor(R.color.colorWhite)
+                    .navigationBarEnable(false)
                     .statusBarDarkFont(true)
-                    .fullScreen(true)
                     .init();
+            if (chart != null) {
+                chart.animateY(700);
+            }
+
         }
     }
 

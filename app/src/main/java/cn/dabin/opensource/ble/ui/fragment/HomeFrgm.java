@@ -70,14 +70,14 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
             if (this.getActivity() == null) {
                 return;
             }
+            ImmersionBar.with(this)
+                    .statusBarView(R.id.view)
+                    .statusBarColor(R.color.colorStatusBarBlue)
+                    .navigationBarEnable(false)
+                    .init();
             ((HomeAct) getActivity()).setCallBack(this);
             reqBleData();
-            ImmersionBar.with(HomeFrgm.this)
-                    .statusBarView(R.id.topPanel)
-                    .statusBarColor(R.color.colorStatusBarBlue)
-                    .statusBarDarkFont(false)
-                    .fullScreen(true)
-                    .init();
+
         }
     }
 
@@ -173,7 +173,6 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
     private void setCurrentDate(Date date) {
         String time = new SimpleDateFormat("MM月dd日").format(date);
         tvHomeTime.setText(time);
-
         //todo
 
     }

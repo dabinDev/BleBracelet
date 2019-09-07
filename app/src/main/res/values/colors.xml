@@ -18,6 +18,7 @@
     <color name="colorPrimaryDark">#689DF8</color>
     <color name="colorPrimaryLight">#689DF8</color>
     <color name="colorAccent">#689DF8</color>
+    <color name="colorBackText">#0074ff</color>
     <color name="colorLabelBg">#aacf52</color>
     <color name="colorLoginBtnBlue">#67cce0</color>
     <color name="colorLoginBtnGray">#b8bfcc</color>

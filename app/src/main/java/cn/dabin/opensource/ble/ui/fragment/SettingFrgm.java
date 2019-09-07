@@ -57,10 +57,13 @@ public class SettingFrgm extends BaseFragment {
                 return;
             }
             ImmersionBar.with(this)
-                    .statusBarColor(R.color.color_white)
+                    .statusBarView(R.id.view)
+                    .statusBarColor(R.color.colorWhite)
+                    .navigationBarEnable(false)
                     .statusBarDarkFont(true)
-                    .fullScreen(true)
                     .init();
+
+
         }
     }
 

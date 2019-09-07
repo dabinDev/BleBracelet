@@ -27,7 +27,8 @@ ext {
             "annotations"          : 'org.jetbrains:annotations:15.0',
             "XTabLayout"           : 'com.androidkun:XTabLayout:1.1.3',
             "eventbus"             : 'org.greenrobot:eventbus:3.1.1',
-            "immersionbar"         : 'com.gyf.immersionbar:immersionbar:3.0.0-beta05', /*状态栏*/
+            "immersionbar"         : 'com.gyf.immersionbar:immersionbar:3.0.0', /*状态栏*/
+            "immersionbarComponents"         : 'com.gyf.immersionbar:immersionbar-components:3.0.0', /*状态栏*/
             "nineoldandroids"      : 'com.nineoldandroids:library:2.4.0', /*动画*/
             "badgeview"            : 'q.rorbin:badgeview:1.1.3', /*badgeview*/
             "rebound"              : 'com.facebook.rebound:rebound:0.3.8', /*弹窗*/
@@ -41,6 +42,8 @@ ext {
             "lib_crop"             : 'com.soundcloud.android.crop:lib_crop:1.0.0',
             "marqueeview"          : 'com.sunfusheng:marqueeview:1.3.3',
             "circleprogressbar"    : 'am.widget:circleprogressbar:1.0.3',
+            "rxjava"               : 'io.reactivex.rxjava2:rxjava:2.1.16',
+            "rxandroid"            : 'io.reactivex.rxjava2:rxandroid:2.0.1',
             "smartrefresh"         : 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-14' /*下拉刷新*/
    ]
 

@@ -56,21 +56,23 @@ public class DataFagm extends BaseFragment {
     @Override public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
+            if (this.getActivity()==null)
+            {
+                return;
+            }
+            ImmersionBar.with(this)
+                    .statusBarView(R.id.view)
+                    .statusBarColor(R.color.colorWhite)
+                    .navigationBarEnable(false)
+                    .statusBarDarkFont(true)
+                    .init();
             if (chart1 != null) {
                 chart1.animateY(700);
             }
             if (chart2 != null) {
                 chart2.animateY(700);
             }
-            if (this.getActivity()==null)
-            {
-                return;
-            }
-            ImmersionBar.with(this)
-                    .statusBarColor(R.color.color_white)
-                    .statusBarDarkFont(true)
-                    .fullScreen(true)
-                    .init();
+
         }
     }
 

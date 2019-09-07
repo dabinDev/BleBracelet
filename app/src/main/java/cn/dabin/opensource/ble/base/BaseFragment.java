@@ -123,6 +123,18 @@ public abstract class BaseFragment extends Fragment {
         super.onDestroyView();
     }
 
+    public String readToken() {
+        return SharedPreUtil.getString(getContext(), "token", "");
+    }
+
+
+    public void saveToken(String token) {
+        SharedPreUtil.saveString(getContext(), "token", token);
+    }
+
+    public void removeToken() {
+        SharedPreUtil.clearByKey(getContext(), "token");
+    }
 
     public String readMac() {
         return SharedPreUtil.getString(getContext(), "mac", "");

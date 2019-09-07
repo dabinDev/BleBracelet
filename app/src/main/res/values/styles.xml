@@ -44,5 +44,8 @@
         <item name="android:textColor">#666666</item>
         <item name="android:textSize">@dimen/text_size_17</item>
     </style>
-
+    <style name="AnimationPreview">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
 </resources>

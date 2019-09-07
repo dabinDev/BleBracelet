@@ -4,15 +4,23 @@
     android:background="@color/colorBg"
     android:orientation="vertical">
 
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/colorWhite" />
+
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="match_parent"
         android:text="我的"
+        android:textStyle="bold"
         android:background="@color/colorWhite"
-        android:textSize="@dimen/text_size_25"
+        android:textSize="@dimen/text_size_20"
         android:textColor="@color/colorSecondaryText"
         android:gravity="center"
-        android:layout_height="40dp" />
+        android:layout_height="50dp" />
+
 
     <View
         android:layout_width="match_parent"

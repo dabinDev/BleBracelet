@@ -48,6 +48,7 @@ dependencies {
     implementation rootProject.ext.dependencies.gson
     implementation rootProject.ext.dependencies.litepal
     implementation rootProject.ext.dependencies.immersionbar
+    implementation rootProject.ext.dependencies.immersionbarComponents
     implementation rootProject.ext.dependencies.circleprogressbar
     /*implementation rootProject.ext.dependencies.eventbus*/
     implementation rootProject.ext.dependencies.okgo
@@ -60,4 +61,8 @@ dependencies {
     implementation 'com.vise.xiaoyaoyou:xsnow:2.1.5'
     implementation project(path: ':dfu')
     implementation project(path: ':baseble')
+    implementation project(path: ':Picture')
+    implementation project(path: ':Multipleimageselect')
+    implementation project(path: ':Luban')
+    implementation project(path: ':Takephoto')
 }

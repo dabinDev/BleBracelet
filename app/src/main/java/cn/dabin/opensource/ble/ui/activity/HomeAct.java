@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import com.gyf.immersionbar.ImmersionBar;
 import com.vise.baseble.ViseBle;
 import com.vise.baseble.callback.scan.IScanCallback;
 import com.vise.baseble.callback.scan.ScanCallback;
@@ -117,11 +118,17 @@ public class HomeAct extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_home);
         viewPager = findViewById(R.id.viewPager);
+        ImmersionBar.with(this)
+                .fitsSystemWindows(true)
+                .navigationBarEnable(false)
+                .statusBarDarkFont(true)
+                .init();
         initBottomBar();
         ViseLog.getLogConfig().configAllowLog(true);//配置日志信息
         ViseLog.plant(new LogcatTree());//添加Logcat打印信息
         BluetoothDeviceManager.getInstance().init(this);
         BusManager.getBus().register(this);
+
     }
 
     private final DfuProgressListener mDfuProgressListener = new DfuProgressListener() {

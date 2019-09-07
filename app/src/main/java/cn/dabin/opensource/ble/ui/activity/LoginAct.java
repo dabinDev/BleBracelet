@@ -11,7 +11,6 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
-import com.gyf.immersionbar.ImmersionBar;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.HttpParams;
 
@@ -53,10 +52,6 @@ public class LoginAct extends BaseActivity implements View.OnClickListener {
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_login);
-        ImmersionBar.with(this)
-                .statusBarColor(R.color.colorMain)
-                .fitsSystemWindows(true)  //使用该属性必须指定状态栏的颜色，不然状态栏透明，很难看
-                .init();
         initView();
     }
 
