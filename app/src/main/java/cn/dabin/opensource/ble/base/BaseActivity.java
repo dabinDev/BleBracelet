@@ -154,6 +154,20 @@ public class BaseActivity extends AppCompatActivity {
         SharedPreUtil.clearByKey(this, "token");
     }
 
+
+    public String readMobile() {
+        return SharedPreUtil.getString(this, "mobile", "");
+    }
+
+    public void saveMobile(String mobile) {
+        SharedPreUtil.saveString(this, "mobile", mobile);
+    }
+
+    public void removeMobile() {
+        SharedPreUtil.clearByKey(this, "mobile");
+    }
+
+
     public String readMac() {
         return SharedPreUtil.getString(this, "mac", "");
     }
@@ -162,6 +176,12 @@ public class BaseActivity extends AppCompatActivity {
     public void saveMac(String mac) {
         SharedPreUtil.saveString(this, "mac", mac);
     }
+
+
+    public void removeMac(String mac) {
+        SharedPreUtil.clearByKey(this, "mac");
+    }
+
 
 }
 

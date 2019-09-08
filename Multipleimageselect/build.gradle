@@ -21,6 +21,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     api rootProject.ext.dependencies.appcompat_v7
     api rootProject.ext.dependencies.design
-    api rootProject.ext.dependencies.glide
+    api 'com.github.bumptech.glide:glide:4.9.0'
 
 }

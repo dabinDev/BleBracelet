@@ -123,6 +123,7 @@ public abstract class BaseFragment extends Fragment {
         super.onDestroyView();
     }
 
+
     public String readToken() {
         return SharedPreUtil.getString(getContext(), "token", "");
     }
@@ -136,6 +137,20 @@ public abstract class BaseFragment extends Fragment {
         SharedPreUtil.clearByKey(getContext(), "token");
     }
 
+
+    public String readMobile() {
+        return SharedPreUtil.getString(getContext(), "mobile", "");
+    }
+
+    public void saveMobile(String mobile) {
+        SharedPreUtil.saveString(getContext(), "mobile", mobile);
+    }
+
+    public void removeMobile() {
+        SharedPreUtil.clearByKey(getContext(), "mobile");
+    }
+
+
     public String readMac() {
         return SharedPreUtil.getString(getContext(), "mac", "");
     }
@@ -143,6 +158,11 @@ public abstract class BaseFragment extends Fragment {
 
     public void saveMac(String mac) {
         SharedPreUtil.saveString(getContext(), "mac", mac);
+    }
+
+
+    public void removeMac(String mac) {
+        SharedPreUtil.clearByKey(getContext(), "mac");
     }
 
 }

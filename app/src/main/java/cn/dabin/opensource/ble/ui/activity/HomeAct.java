@@ -373,26 +373,26 @@ public class HomeAct extends BaseActivity {
                 BluetoothGattService service1 = event.getDeviceMirror().getGattService(TX_SERVICE_UUID);
                 BluetoothGattCharacteristic characteristic1 = service1.getCharacteristic(TX_CHAR_UUID);
                 int charaProp1 = characteristic1.getProperties();
-                ViseLog.e("DeviceControl--- serviceUUid", service1.getUuid().toString());
-                ViseLog.e("DeviceControl--- characteristicUUid", characteristic1.getUuid().toString());
-                ViseLog.e("DeviceControl--- charaProp", String.valueOf(charaProp1));
+                ViseLog.e("DeviceControl--- serviceUUid"+ service1.getUuid().toString());
+                ViseLog.e("DeviceControl--- characteristicUUid"+ characteristic1.getUuid().toString());
+                ViseLog.e("DeviceControl--- charaProp"+ charaProp1);
                 initNotice(service1, characteristic1, charaProp1);
 
 
                 BluetoothGattService service2 = event.getDeviceMirror().getGattService(RX_SERVICE_UUID);
                 BluetoothGattCharacteristic characteristic2 = service2.getCharacteristic(RX_CHAR_UUID);
                 int charaProp2 = characteristic2.getProperties();
-                ViseLog.e("DeviceControl--- serviceUUid", service2.getUuid().toString());
-                ViseLog.e("DeviceControl--- characteristicUUid", characteristic2.getUuid().toString());
-                ViseLog.e("DeviceControl--- charaProp", String.valueOf(charaProp2));
+                ViseLog.e("DeviceControl--- serviceUUid"+ service2.getUuid().toString());
+                ViseLog.e("DeviceControl--- characteristicUUid"+ characteristic2.getUuid().toString());
+                ViseLog.e("DeviceControl--- charaProp"+ charaProp2);
                 initNotice(service2, characteristic2, charaProp2);
 
                 BluetoothGattService service3 = event.getDeviceMirror().getGattService(SYSTEM_SERVICE_UUID);
                 BluetoothGattCharacteristic characteristic3 = service3.getCharacteristic(SYSTEM_CHAR_UUID);
                 int charaProp3 = characteristic3.getProperties();
-                ViseLog.e("DeviceControl--- serviceUUid", service3.getUuid().toString());
-                ViseLog.e("DeviceControl--- characteristicUUid", characteristic3.getUuid().toString());
-                ViseLog.e("DeviceControl--- charaProp", String.valueOf(charaProp3));
+                ViseLog.e("DeviceControl--- serviceUUid"+ service3.getUuid().toString());
+                ViseLog.e("DeviceControl--- characteristicUUid"+ characteristic3.getUuid().toString());
+                ViseLog.e("DeviceControl--- charaProp"+ charaProp3);
                 initNotice(service3, characteristic3, charaProp3);
             }
         }
@@ -459,12 +459,14 @@ public class HomeAct extends BaseActivity {
             value = msg.getBytes(StandardCharsets.UTF_8);
             if (currentDevice != null) {
                 BluetoothDeviceManager.getInstance().write(currentDevice, value);
-                ViseLog.e("writeData -- 写入消息");
+                ViseLog.e("writeData -- 写入消息 --currentCommand:"+msg );
             } else {
-                Logger.e(TAG, "当前蓝牙设备还未连接！");
+                ViseLog.e("当前蓝牙设备还未连接！");
             }
         });
     }
+
+
 
 
 }

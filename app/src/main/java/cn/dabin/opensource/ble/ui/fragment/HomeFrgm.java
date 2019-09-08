@@ -11,16 +11,23 @@ import android.widget.TextView;
 import com.bigkoo.pickerview.builder.TimePickerBuilder;
 import com.bigkoo.pickerview.listener.OnTimeSelectListener;
 import com.bigkoo.pickerview.view.TimePickerView;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.gyf.immersionbar.ImmersionBar;
+import com.vise.log.ViseLog;
 import com.vise.xsnow.event.BusManager;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import cn.dabin.opensource.ble.R;
 import cn.dabin.opensource.ble.base.BaseFragment;
 import cn.dabin.opensource.ble.global.BleApplication;
 import cn.dabin.opensource.ble.network.bean.BleInfo;
+import cn.dabin.opensource.ble.network.bean.StepInfo;
+import cn.dabin.opensource.ble.network.bean.UseEyeInfo;
 import cn.dabin.opensource.ble.ui.activity.HomeAct;
 import cn.dabin.opensource.ble.util.StringUtils;
 
@@ -36,7 +43,9 @@ import static com.vise.utils.handler.HandlerUtil.runOnUiThread;
  * Class description:
  */
 public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTimeSelectListener, HomeAct.BleCallBack {
-    private RelativeLayout topPanel;
+    private final String commond_a="a";
+    private final String commond_e="e";
+    private final String commond_f="f";
     private LinearLayout llTop1;
     private ImageView tvToLast;
     private TextView tvHomeTime;
@@ -55,8 +64,10 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
     private TextView tvLongUseTime;
     private TextView tvUseDistanceUse;
     private TimePickerView pvTime;
-    private String currentMsgTag = "";
+    private String currentCommond = "";
     private final String TAG = HomeFrgm.this.getClass().getName();
+    private List<StepInfo> stepInfoList = new ArrayList<>();
+    private List<UseEyeInfo> useEyeInfoList = new ArrayList<>();
 
 
     @Override protected int getLayoutId() {
@@ -82,17 +93,27 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
     }
 
     private void reqBleData() {
-        ((HomeAct) getActivity()).sendMsg("a");
-        new Handler().postDelayed(() -> ((HomeAct) getActivity()).sendMsg("v"), 200);
-
+        new Handler().postDelayed(() -> ((HomeAct) getActivity()).sendMsg("v"), 500);
+        new Handler().postAtTime(() -> {
+            ((HomeAct) getActivity()).sendMsg(commond_a);
+            currentCommond = commond_a;
+        }, 1000);
+        new Handler().postDelayed(() -> {
+            ((HomeAct) getActivity()).sendMsg(commond_e);
+            currentCommond = commond_e;
+        }, 2500);
+        new Handler().postDelayed(() -> {
+            ((HomeAct) getActivity()).sendMsg(commond_f);
+            currentCommond = commond_f;
+        }, 5000);
     }
+
 
     @Override public void onLazyLoad() {
         initView();
     }
 
     @SuppressLint("StringFormatInvalid") private void initView() {
-        topPanel = view.findViewById(R.id.topPanel);
         tvToLast = view.findViewById(R.id.tv_to_last);
         tvHomeTime = view.findViewById(R.id.tv_home_time);
         tvToNext = view.findViewById(R.id.tv_to_next);
@@ -137,7 +158,6 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
         if (StringUtils.isNotEmpty(readMac())) {
             BleInfo info = BleApplication.getBleInfo(readMac());
             tvBattery.setText(StringUtils.value("当前电量:" + info.getCurrentBattery() + "%"));
-
         }
 
     }
@@ -181,13 +201,14 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
         String msg = received.toLowerCase();
         if (StringUtils.value(msg).contains("v:") && StringUtils.value(msg).contains("mv")) {
             msg = msg.replace("mv", "").replace("v:", "");
-            double battary = Double.valueOf(msg) / 1000;
+            Double current = Double.valueOf(msg);
+            int battary = Double.valueOf(current / 1000).intValue();
             if (battary > 4.1) {
                 tvBattery.setText(StringUtils.value("当前电量:" + 100 + "%"));
             } else if (battary < 3.6) {
                 tvBattery.setText(StringUtils.value("当前电量:" + 17 + "%"));
             } else {
-                battary = (battary - 3.6) * 10 * 16.6 + 17;
+                battary = (int) ((battary - 3.6) * 10 * 16.6 + 17);
                 tvBattery.setText(StringUtils.value("当前电量:" + battary + "%"));
             }
             String time = new SimpleDateFormat("MM月dd日 HH:mm").format(new Date());
@@ -201,6 +222,29 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
                 info.setCurrentBattery((int) finalBattary);
                 info.save();
             });
+        } else if (StringUtils.value(msg).contains("t:") && StringUtils.value(msg).contains("b:")) {
+            //获取步数信息
+            StepInfo stepInfo = new StepInfo(msg);
+            stepInfoList.add(stepInfo);
+            String json = new Gson().toJson(stepInfoList, new TypeToken<List<StepInfo>>() {
+            }.getType());
+            ViseLog.json(json);
+        } else if (StringUtils.value(msg).contains("t:") && StringUtils.value(msg).contains("r:")) {
+            //获取步数信息
+            UseEyeInfo useEyeInfo = new UseEyeInfo(msg);
+            if(currentCommond.equals(commond_a))
+            {
+                useEyeInfoList.add(useEyeInfo);
+                String json = new Gson().toJson(useEyeInfoList, new TypeToken<List<UseEyeInfo>>() {
+                }.getType());
+                ViseLog.json(json);
+            }else if(currentCommond.equals(commond_a))
+            {
+                useEyeInfoList.add(useEyeInfo);
+                String json = new Gson().toJson(useEyeInfoList, new TypeToken<List<UseEyeInfo>>() {
+                }.getType());
+                ViseLog.json(json);
+            }
         }
     }
 

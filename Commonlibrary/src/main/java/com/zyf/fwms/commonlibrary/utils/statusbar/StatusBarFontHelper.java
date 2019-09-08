@@ -2,6 +2,7 @@ package com.zyf.fwms.commonlibrary.utils.statusbar;
 
 import android.app.Activity;
 import android.os.Build;
+
 import androidx.annotation.IntDef;
 
 import com.zyf.fwms.commonlibrary.utils.statusbar.impl.AndroidMHelper;
