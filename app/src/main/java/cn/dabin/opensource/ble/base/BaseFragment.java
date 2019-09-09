@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import cn.dabin.opensource.ble.util.SharedPreUtil;
 import github.opensource.dialog.BeToastUtil;
+import github.opensource.dialog.prompt.PromptDialog;
 
 /**
  * Project :  BleBracelet.
@@ -27,6 +28,9 @@ public abstract class BaseFragment extends Fragment {
     public View view;
     private boolean isLazyLoaded;
     private boolean isPrepared;
+    private PromptDialog loading;
+
+
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -98,6 +102,7 @@ public abstract class BaseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (view == null) {
             view = inflater.inflate(getLayoutId(), container, false);
+            loading = new PromptDialog(getActivity());
         } else {
             //  二次加载删除上一个子view
             ViewGroup viewGroup = (ViewGroup) view.getParent();
@@ -164,5 +169,21 @@ public abstract class BaseFragment extends Fragment {
     public void removeMac(String mac) {
         SharedPreUtil.clearByKey(getContext(), "mac");
     }
+
+
+    public void loading(String message) {
+        if (loading == null) {
+            return;
+        }
+        loading.showLoading(message);
+    }
+
+    public void dissmiss() {
+        if (loading == null) {
+            return;
+        }
+        loading.dismiss();
+    }
+
 
 }

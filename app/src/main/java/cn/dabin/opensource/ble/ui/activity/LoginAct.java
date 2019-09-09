@@ -109,13 +109,12 @@ public class LoginAct extends BaseActivity implements View.OnClickListener {
                 Gson gson = new Gson();
                 String toJson = gson.toJson(login);
                 RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), toJson);
-                //RequestBody formBody = new FormBody.Builder();
-
                 OkGo.<String>post(BleApi.getUrl(BleApi.login)).upRequestBody(requestBody).tag(this).execute(new MineStringCallback() {
                     @Override public void success(String result) {
                         LoginBean bean = new Gson().fromJson(result, LoginBean.class);
                         if (bean.getSuccess()) {
                             showCenterSuccessMsg("登录成功");
+                            saveMobile(phone);
                             saveToken(bean.getModel());
                             HomeAct.openAct(LoginAct.this);
                             finish();

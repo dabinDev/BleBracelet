@@ -8,6 +8,8 @@ import com.lzy.okgo.utils.OkLogger;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import cn.dabin.opensource.ble.global.BleApplication;
+import github.opensource.dialog.BeToastUtil;
 import okhttp3.Response;
 
 public abstract class MineStringCallback extends AbsCallback<String> {
@@ -56,6 +58,7 @@ public abstract class MineStringCallback extends AbsCallback<String> {
     public void onError(com.lzy.okgo.model.Response<String> response) {
         OkLogger.d("onError--------------------------------------");
         OkLogger.printStackTrace(response.getException());
+        BeToastUtil.get().showTopWrongMsg(BleApplication.getApplication(), "网络异常");
         OkLogger.d("onError----------------end-------------------");
     }
 

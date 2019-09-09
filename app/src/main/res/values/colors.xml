@@ -24,4 +24,10 @@
     <color name="colorLoginBtnGray">#b8bfcc</color>
     <color name="colorBgGray">#edf0ff</color>
 
+
+    <color name="colorAbnormal">#007845</color>
+    <color name="colorNearly">#14b5ee</color>
+    <color name="colorNormal">#b8d36d</color>
+    <color name="colorWrong">#003877</color>
+
 </resources>

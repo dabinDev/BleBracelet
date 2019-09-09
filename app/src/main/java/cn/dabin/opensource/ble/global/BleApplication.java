@@ -1,6 +1,7 @@
 package cn.dabin.opensource.ble.global;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.cache.CacheEntity;
@@ -30,22 +31,28 @@ import okhttp3.OkHttpClient;
  */
 public class BleApplication extends Application {
 
+    private static Context application;
+
 
     @Override public void onCreate() {
         super.onCreate();
+        application = getApplicationContext();
         JPushInterface.setDebugMode(true);    // 设置开启日志,发布时请关闭日志
         JPushInterface.init(this);            // 初始化 JPush
         LitePal.initialize(this);
         initOkGo();
         initBluetooth();
+    }
 
+
+    public static Context getApplication() {
+        return application;
     }
 
 
 
-    public static BleInfo getBleInfo(String macAddress)
-    {
-        return LitePal.where("macAddress=?",macAddress).findFirst(BleInfo.class);
+    public static BleInfo getBleInfo(String macAddress) {
+        return LitePal.where("macAddress=?", macAddress).findFirst(BleInfo.class);
     }
 
 
@@ -73,6 +80,7 @@ public class BleApplication extends Application {
                 .setCacheTime(CacheEntity.CACHE_NEVER_EXPIRE)   //全局统一缓存时间，默认永不过期，可以不传
                 .setRetryCount(3);                            //全局统一超时重连次数，默认为三次，那么最差的情况会请求4次(一次原始请求，三次重连请求)，不需要可以设置为0
     }
+
     private void initBluetooth() {
    /*     //蓝牙相关配置修改
         ViseBle.config()

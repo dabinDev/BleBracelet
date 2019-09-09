@@ -5,17 +5,21 @@
     android:layout_height="match_parent"
     android:paddingStart="15dp"
     android:paddingBottom="15dp"
+    android:weightSum="10"
     android:paddingRight="15dp"
     android:background="@color/colorWhite"
     android:orientation="vertical">
+
     <View
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/colorWhite" />
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="4"
         android:orientation="horizontal">
 
         <TextView
@@ -39,15 +43,12 @@
         <am.widget.circleprogressbar.CircleProgressBar
             android:id="@+id/circleprogressbar_cpb_demo"
             android:layout_width="wrap_content"
-            android:layout_height="300dp"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
             android:layout_centerHorizontal="true"
             android:background="@drawable/bg_drawable_center"
             app:cpbBackgroundColor="@color/colorPrimary"
             app:cpbBackgroundSize="2dp"
-            app:cpbBottomText="cm"
-            app:cpbBottomTextColor="#ffffbb33"
-            app:cpbBottomTextGap="40dp"
-            app:cpbBottomTextSize="16sp"
             app:cpbDialAngle="5"
             app:cpbDialColor="@color/colorPrimary"
             app:cpbDialGap="4dp"
@@ -63,15 +64,14 @@
             app:cpbLoadingDrawOther="true"
             app:cpbLoadingDuration="3000"
             app:cpbLoadingRepeatMode="Reverse"
-            app:cpbLoadingText="18"
             app:cpbMax="810"
             app:cpbProgress="315"
             app:cpbProgressDuration="2000"
             app:cpbProgressMode="Loading"
             app:cpbProgressSize="20dp"
             app:cpbProgressValueTextColor="#ff33b5e5"
-            app:cpbProgressValueTextSize="72sp"
-            app:cpbRadius="100dp"
+            app:cpbProgressValueTextSize="62sp"
+            app:cpbRadius="70dp"
             app:cpbScaleType="None"
             app:cpbSecondGradientColors="@color/colorPrimary"
             app:cpbShowProgressValue="true"
@@ -79,30 +79,121 @@
             app:cpbSpecialDialValueGap="2dp"
             app:cpbSpecialDialValueTextColor="@color/colorPrimary"
             app:cpbSpecialDialValueTextSize="12sp"
-            app:cpbStartAngle="135"
-            app:cpbSweepAngle="270"
+            app:cpbStartAngle="150"
+            app:cpbSweepAngle="240"
             app:cpbThirdGradientColors="#ffffbb33"
             app:cpbTopTextColor="@color/colorPrimary"
             app:cpbTopTextGap="40dp"
             app:cpbTopTextSize="20sp" />
 
+        <LinearLayout
+            android:layout_width="100dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/ic_measure"
+            android:textColor="@color/colorWhite"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:text="\nCM"
+            android:layout_height="100dp">
+
+            <TextView
+                android:id="@+id/tv_measure"
+                android:layout_width="match_parent"
+                android:text="18"
+                android:gravity="center"
+                android:textSize="@dimen/text_size_30"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:weightSum="3"
+        android:weightSum="6"
+        android:layout_weight="6"
         android:orientation="vertical"
-        android:layout_height="match_parent">
+        android:layout_height="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:weightSum="2.2"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:layout_height="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:weightSum="2"
+                android:orientation="horizontal"
+                android:layout_height="0dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|start"
+                    android:text="监护 (5分钟用眼平均距离统计)"
+                    android:drawablePadding="10dp"
+                    android:textSize="@dimen/text_size_13"
+                    android:textColor="@color/colorSecondaryText"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:text="近距离用眼"
+                    android:gravity="center_vertical|end"
+                    android:textSize="@dimen/text_size_13"
+                    android:layout_weight="1"
+                    android:drawablePadding="10dp"
+                    android:textColor="@color/colorSecondaryText"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:weightSum="3"
+                android:gravity="center"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:orientation="horizontal"
+                android:layout_height="0dp">
+
+                <TextView
+                    android:id="@+id/tv_5_7"
+                    android:text="17:00-22:00"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    style="@style/time_label_style" />
+
+                <TextView
+                    android:id="@+id/tv_12_17"
+                    android:text="17:00-22:00"
+                    android:layout_centerInParent="true"
+                    android:layout_centerVertical="true"
+                    style="@style/time_label_style" />
+
+                <TextView
+                    android:id="@+id/tv_17_22"
+                    android:text="17:00-22:00"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    style="@style/time_label_style" />
+            </RelativeLayout>
+        </LinearLayout>
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/chart"
             android:layout_width="match_parent"
-            android:layout_weight="2.4"
+            android:layout_weight="4"
             android:layout_height="0dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_weight="0.6"
+            android:layout_weight="0.8"
             android:orientation="vertical"
             android:weightSum="2"
             android:paddingStart="15dp"
@@ -124,7 +215,7 @@
                     android:text="非正常使用"
                     android:drawablePadding="10dp"
                     android:drawableStart="@drawable/icon_square_blue"
-                    android:textSize="@dimen/text_size_15"
+                    android:textSize="@dimen/text_size_13"
                     android:textColor="@color/colorSecondaryText"
                     android:layout_height="match_parent" />
 
@@ -133,7 +224,7 @@
                     android:layout_width="0dp"
                     android:text="近距离用眼"
                     android:gravity="center_vertical|start"
-                    android:textSize="@dimen/text_size_15"
+                    android:textSize="@dimen/text_size_13"
                     android:layout_weight="1"
                     android:drawablePadding="10dp"
                     android:drawableStart="@drawable/icon_square_dark"
@@ -155,7 +246,7 @@
                     android:text="正常使用"
                     android:gravity="center_vertical|start"
                     android:drawablePadding="10dp"
-                    android:textSize="@dimen/text_size_15"
+                    android:textSize="@dimen/text_size_13"
                     android:layout_weight="1"
                     android:drawableStart="@drawable/icon_square_hint"
                     android:layout_height="match_parent" />
@@ -169,7 +260,7 @@
                     android:drawablePadding="10dp"
                     android:drawableStart="@drawable/icon_square_yellow"
                     android:layout_weight="1"
-                    android:textSize="@dimen/text_size_15"
+                    android:textSize="@dimen/text_size_13"
                     android:layout_height="match_parent" />
             </LinearLayout>
         </LinearLayout>

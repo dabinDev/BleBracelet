@@ -14,13 +14,13 @@ import cn.dabin.opensource.ble.util.StringUtils;
  */
 public class UseEyeInfo {
     private long time;
-    private int step;
+    private int num;
 
     public UseEyeInfo(String stepInfo) {
         if (StringUtils.isNotEmpty(stepInfo) && stepInfo.contains("t:") && stepInfo.contains("r:")) {
             long time = Long.valueOf(stepInfo.substring(stepInfo.indexOf("t") + 2, stepInfo.indexOf("r")).trim());
             int step = Integer.valueOf(stepInfo.substring(stepInfo.indexOf("r") + 2).trim());
-            setStep(step);
+            setNum(step);
             setTime(DateUtil.removeSecond(time));
         }
     }
@@ -34,11 +34,11 @@ public class UseEyeInfo {
         this.time = time;
     }
 
-    public int getStep() {
-        return step;
+    public int getNum() {
+        return num;
     }
 
-    public void setStep(int step) {
-        this.step = step;
+    public void setNum(int num) {
+        this.num = num;
     }
 }

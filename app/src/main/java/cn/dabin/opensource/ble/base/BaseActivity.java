@@ -20,6 +20,7 @@ import cn.dabin.opensource.ble.util.AppManager;
 import cn.dabin.opensource.ble.util.SharedPreUtil;
 import cn.jpush.android.api.JPushInterface;
 import github.opensource.dialog.BeToastUtil;
+import github.opensource.dialog.prompt.PromptDialog;
 
 import static cn.dabin.opensource.ble.ui.activity.HomeAct.MESSAGE_RECEIVED_ACTION;
 
@@ -40,6 +41,7 @@ public class BaseActivity extends AppCompatActivity {
     private Intent serviceIntent;
     //for receive customer msg from jpush server
     private JPushBroadcast jPushBroadcast;
+    private PromptDialog loading;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +50,7 @@ public class BaseActivity extends AppCompatActivity {
         // 友盟推送
         mContext = this;
         mResource = getResources();
+        loading = new PromptDialog(this);
         init();
         registerMessageReceiver();  // used for receive msg
     }
@@ -182,6 +185,20 @@ public class BaseActivity extends AppCompatActivity {
         SharedPreUtil.clearByKey(this, "mac");
     }
 
+
+    public void loading(String message) {
+        if (loading == null) {
+            return;
+        }
+        loading.showLoading(message);
+    }
+
+    public void dissmiss() {
+        if (loading == null) {
+            return;
+        }
+        loading.dismiss();
+    }
 
 }
 

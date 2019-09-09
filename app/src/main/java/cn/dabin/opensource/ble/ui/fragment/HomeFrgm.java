@@ -14,6 +14,10 @@ import com.bigkoo.pickerview.view.TimePickerView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.gyf.immersionbar.ImmersionBar;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.model.HttpHeaders;
+import com.lzy.okgo.model.HttpParams;
+import com.lzy.okgo.model.Response;
 import com.vise.log.ViseLog;
 import com.vise.xsnow.event.BusManager;
 
@@ -25,11 +29,18 @@ import java.util.List;
 import cn.dabin.opensource.ble.R;
 import cn.dabin.opensource.ble.base.BaseFragment;
 import cn.dabin.opensource.ble.global.BleApplication;
+import cn.dabin.opensource.ble.network.BleApi;
 import cn.dabin.opensource.ble.network.bean.BleInfo;
+import cn.dabin.opensource.ble.network.bean.ResultMsg;
+import cn.dabin.opensource.ble.network.bean.SaveShData;
 import cn.dabin.opensource.ble.network.bean.StepInfo;
 import cn.dabin.opensource.ble.network.bean.UseEyeInfo;
+import cn.dabin.opensource.ble.network.callback.MineStringCallback;
 import cn.dabin.opensource.ble.ui.activity.HomeAct;
+import cn.dabin.opensource.ble.util.DateUtil;
 import cn.dabin.opensource.ble.util.StringUtils;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 import static com.vise.utils.handler.HandlerUtil.runOnUiThread;
 
@@ -43,9 +54,9 @@ import static com.vise.utils.handler.HandlerUtil.runOnUiThread;
  * Class description:
  */
 public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTimeSelectListener, HomeAct.BleCallBack {
-    private final String commond_a="a";
-    private final String commond_e="e";
-    private final String commond_f="f";
+    private final String commond_a = "a";
+    private final String commond_e = "e";
+    private final String commond_f = "f";
     private LinearLayout llTop1;
     private ImageView tvToLast;
     private TextView tvHomeTime;
@@ -93,12 +104,15 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
     }
 
     private void reqBleData() {
+        loading("读取手环数据中");
         new Handler().postDelayed(() -> ((HomeAct) getActivity()).sendMsg("v"), 500);
         new Handler().postAtTime(() -> {
+            loading("获取用眼信息");
             ((HomeAct) getActivity()).sendMsg(commond_a);
             currentCommond = commond_a;
         }, 1000);
         new Handler().postDelayed(() -> {
+            loading("读取步数信息");
             ((HomeAct) getActivity()).sendMsg(commond_e);
             currentCommond = commond_e;
         }, 2500);
@@ -106,6 +120,36 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
             ((HomeAct) getActivity()).sendMsg(commond_f);
             currentCommond = commond_f;
         }, 5000);
+        new Handler().postDelayed(() -> {
+            loading("同步数据中");
+            String json = new Gson().toJson(useEyeInfoList, new TypeToken<List<UseEyeInfo>>() {
+            }.getType());
+            SaveShData shData = new SaveShData();
+            shData.setUserMobile(readMobile());
+            shData.setValue(readMobile());
+            shData.setType("2");
+            shData.setCreateTime(DateUtil.dateToStr(new Date()));
+            shData.setValue(json);
+            String toJson = new Gson().toJson(shData);
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), toJson);
+            OkGo.<String>post(BleApi.getUrl(BleApi.saveShaData)).upRequestBody(requestBody).headers(new HttpHeaders("token", readToken())).tag(this).execute(new MineStringCallback() {
+                @Override public void success(String result) {
+                    dissmiss();
+                    ResultMsg bean = new Gson().fromJson(result, ResultMsg.class);
+                    if (bean.isSuccess()) {
+                        showCenterInfoMsg("提交成功");
+                    } else {
+                        showCenterInfoMsg("提交失败");
+                    }
+                    switchDate(new Date());
+                }
+
+                @Override public void onError(Response<String> response) {
+                    super.onError(response);
+                    dissmiss();
+                }
+            });
+        }, 7000);
     }
 
 
@@ -187,14 +231,33 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
     }
 
     @Override public void onTimeSelect(Date date, View v) {
-
+        switchDate(date);
     }
 
-    private void setCurrentDate(Date date) {
+    private void switchDate(Date date) {
         String time = new SimpleDateFormat("MM月dd日").format(date);
         tvHomeTime.setText(time);
         //todo
+        HttpParams params1 = new HttpParams();
+        params1.put("userMobile", readMobile());
+        params1.put("date", DateUtil.dateToStr(new Date()));
+        params1.put("type", "2");
+        OkGo.<String>get(BleApi.getUrl(BleApi.getShDataList)).params(params1).headers(new HttpHeaders("token", readToken())).tag(this).execute(new MineStringCallback() {
+            @Override public void success(String result) {
+                dissmiss();
+                ResultMsg bean = new Gson().fromJson(result, ResultMsg.class);
+                if (bean.isSuccess()) {
+                    showCenterInfoMsg("提交成功");
+                } else {
+                    showCenterInfoMsg("提交失败");
+                }
+            }
 
+            @Override public void onError(Response<String> response) {
+                super.onError(response);
+                dissmiss();
+            }
+        });
     }
 
     @Override public void receivedData(String received) {
@@ -232,14 +295,17 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
         } else if (StringUtils.value(msg).contains("t:") && StringUtils.value(msg).contains("r:")) {
             //获取步数信息
             UseEyeInfo useEyeInfo = new UseEyeInfo(msg);
-            if(currentCommond.equals(commond_a))
-            {
+            if (currentCommond.equals(commond_a)) {
                 useEyeInfoList.add(useEyeInfo);
                 String json = new Gson().toJson(useEyeInfoList, new TypeToken<List<UseEyeInfo>>() {
                 }.getType());
                 ViseLog.json(json);
-            }else if(currentCommond.equals(commond_a))
-            {
+            } else if (currentCommond.equals(commond_e)) {
+                useEyeInfoList.add(useEyeInfo);
+                String json = new Gson().toJson(useEyeInfoList, new TypeToken<List<UseEyeInfo>>() {
+                }.getType());
+                ViseLog.json(json);
+            } else if (currentCommond.equals(commond_f)) {
                 useEyeInfoList.add(useEyeInfo);
                 String json = new Gson().toJson(useEyeInfoList, new TypeToken<List<UseEyeInfo>>() {
                 }.getType());
@@ -252,4 +318,5 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
 
 
     }
+
 }

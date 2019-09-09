@@ -861,10 +861,7 @@ public class DateUtil {
         newCalendar.set(Calendar.MINUTE,minute);
         newCalendar.set(Calendar.SECOND,second);
         newCalendar.set(Calendar.MILLISECOND,millisecond);
-        Logger.e("当前时间戳",StringUtils.value(timestamp));
-        Logger.e("当前时间戳",StringUtils.value(newCalendar.getTimeInMillis()/1000));
-        Logger.e("当前时间戳",StringUtils.value(calendar.getTimeInMillis()/1000*1000));
-        return newCalendar.getTimeInMillis();
+        return newCalendar.getTimeInMillis()/1000;
     }
 
 }
