@@ -50,6 +50,10 @@ public class StringUtils {
         return isEmpty(text) ? "--" : text;
     }
 
+
+    public static String valueWithZero(String text) {
+        return isEmpty(text) ? "0" : text;
+    }
     /**
      * @param object
      * @return

@@ -205,6 +205,7 @@
         <activity android:name=".base.BaseActivity" />
         <activity android:name=".ui.activity.BabyInfoAct" />
         <activity android:name=".ui.activity.InputAct" />
+        <activity android:name=".ui.activity.TextAct" />
         <!-- since 3.3.0 Required SDK 核心功能-->
         <!-- 可配置android:process参数将PushService放在其他进程中 -->
         <!--User defined.  For test only 继承自cn.jpush.android.service.JCommonService-->

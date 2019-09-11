@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -44,8 +43,6 @@ import me.shaohui.advancedluban.Luban;
  * Class description:
  */
 public class BabyInfoAct extends BaseActivity implements View.OnClickListener, PromptButtonListener {
-    private TextView tvBack;
-    private TextView tvTitle;
     private AppCompatTextView tvHederTitle;
     private ImageView ivHederIcon;
     private AppCompatTextView tvMaibaoNumTitle;
@@ -77,14 +74,13 @@ public class BabyInfoAct extends BaseActivity implements View.OnClickListener, P
 
     private void initView() {
         promptDialog = new PromptDialog(this);
-        tvBack = findViewById(R.id.tv_back);
-        tvTitle = findViewById(R.id.tv_title);
         tvHederTitle = findViewById(R.id.tv_heder_title);
         ivHederIcon = findViewById(R.id.iv_heder_icon);
         tvMaibaoNumTitle = findViewById(R.id.tv_maibao_num_title);
         tvMaibaoNumValue = findViewById(R.id.tv_maibao_num_value);
         tvNicknameTitle = findViewById(R.id.tv_nickname_title);
         tvNicknameValue = findViewById(R.id.tv_nickname_value);
+        findViewById(R.id.tv_back).setOnClickListener(this);
         findViewById(R.id.ll_maibao_num).setOnClickListener(this);
         findViewById(R.id.rl_header).setOnClickListener(this);
         findViewById(R.id.ll_nick_name).setOnClickListener(this);
@@ -110,6 +106,7 @@ public class BabyInfoAct extends BaseActivity implements View.OnClickListener, P
             case R.id.ll_nick_name:
 
                 break;
+
             default:
                 break;
 
@@ -168,7 +165,7 @@ public class BabyInfoAct extends BaseActivity implements View.OnClickListener, P
 
     private void initDate() {
         HttpParams params = new HttpParams();
-        params.put("userMobile", "18772864166");
+        params.put("userMobile", readMobile());
         OkGo.<String>get(BleApi.getUrl(BleApi.getLoginUser)).params(params).tag(this).execute(new MineStringCallback() {
             @Override public void success(String result) {
                 BabyInfoBean bean = new Gson().fromJson(result, BabyInfoBean.class);
@@ -177,6 +174,7 @@ public class BabyInfoAct extends BaseActivity implements View.OnClickListener, P
                     if (StringUtils.isNotEmpty(bean.getModel().getPhoto())) {
                         Glide.with(mContext).load(bean.getModel().getPhoto()).apply(GlideUtil.$().getOption()).into(ivHederIcon);
                     }
+                    tvNicknameValue.setText(StringUtils.value(bean.getModel().getNickname()));
                 } else {
                     showCenterInfoMsg(bean.getMessage());
                 }

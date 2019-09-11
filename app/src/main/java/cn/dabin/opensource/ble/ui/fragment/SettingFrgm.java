@@ -1,5 +1,6 @@
 package cn.dabin.opensource.ble.ui.fragment;
 
+import android.os.Handler;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -11,6 +12,8 @@ import cn.dabin.opensource.ble.R;
 import cn.dabin.opensource.ble.base.BaseFragment;
 import cn.dabin.opensource.ble.global.BleApplication;
 import cn.dabin.opensource.ble.network.bean.BleInfo;
+import cn.dabin.opensource.ble.ui.activity.HomeAct;
+import cn.dabin.opensource.ble.util.Logger;
 
 /**
  * Project :  BleBracelet.
@@ -21,7 +24,7 @@ import cn.dabin.opensource.ble.network.bean.BleInfo;
  * Changed time: 2019/8/27 16:32
  * Class description:
  */
-public class SettingFrgm extends BaseFragment {
+public class SettingFrgm extends BaseFragment implements RadioGroup.OnCheckedChangeListener, HomeAct.BleCallBack {
     private TextView tvDistanceValue;
     private RadioGroup rgDistance;
     private RadioButton radioDistance27;
@@ -39,6 +42,10 @@ public class SettingFrgm extends BaseFragment {
     private RadioButton radioTipTimeHeigh;
     private Button btnDoSet;
     private BleInfo info;
+    private String currentDistance;
+    private String currentTipTime;
+    private String currentShock;
+    private String currentCommond = "";
 
     @Override protected int getLayoutId() {
         return R.layout.frgm_setting;
@@ -52,8 +59,7 @@ public class SettingFrgm extends BaseFragment {
     @Override public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            if (this.getActivity()==null)
-            {
+            if (this.getActivity() == null) {
                 return;
             }
             ImmersionBar.with(this)
@@ -62,8 +68,7 @@ public class SettingFrgm extends BaseFragment {
                     .navigationBarEnable(false)
                     .statusBarDarkFont(true)
                     .init();
-
-
+            ((HomeAct) getActivity()).setCallBack(this);
         }
     }
 
@@ -75,5 +80,91 @@ public class SettingFrgm extends BaseFragment {
         tvTipTimeValue = view.findViewById(R.id.tv_tip_time_value);
         rgTipTime = view.findViewById(R.id.rg_tip_time);
         btnDoSet = view.findViewById(R.id.btn_do_set);
+        rgDistance.setOnCheckedChangeListener(this);
+        rgShock.setOnCheckedChangeListener(this);
+        rgTipTime.setOnCheckedChangeListener(this);
+        btnDoSet.setOnClickListener(v ->
+        {
+            loading("设置中");
+            setProperty();
+        });
+    }
+
+    @Override public void onCheckedChanged(RadioGroup radioGroup, int i) {
+        switch (radioGroup.getId()) {
+            case R.id.rg_distance:
+                RadioButton rg1 = (radioGroup.findViewById(radioGroup.getCheckedRadioButtonId()));
+                if (rg1 != null) {
+                    currentDistance = String.valueOf(rg1.getTag());
+                }
+                break;
+            case R.id.rg_shock:
+                RadioButton rg2 = (radioGroup.findViewById(radioGroup.getCheckedRadioButtonId()));
+                if (rg2 != null) {
+                    currentShock = String.valueOf(rg2.getTag());
+                }
+                break;
+            case R.id.rg_tip_time:
+                RadioButton rg3 = (radioGroup.findViewById(radioGroup.getCheckedRadioButtonId()));
+                if (rg3 != null) {
+                    currentTipTime = String.valueOf(rg3.getTag());
+                }
+                break;
+            default:
+                break;
+
+        }
+    }
+
+    private void setProperty() {
+        new Handler().postDelayed(() -> {
+            ((HomeAct) getActivity()).sendMsg("v");
+            currentCommond = "v";
+        }, 500);
+        //设置振动强度：(设定范围0~10)
+        //	“sp”+”强度值”    默认值：10
+        new Handler().postDelayed(() -> {
+            ((HomeAct) getActivity()).sendMsg("sp" + currentShock);
+            currentCommond = "sp";
+        }, 1000);
+        //22.设置距离监测下持续检测有效时间 (范围0~60)
+        //	“sr”+”时间”      默认：5 （秒）
+        new Handler().postDelayed(() -> {
+            ((HomeAct) getActivity()).sendMsg("sr" + currentTipTime);
+            currentCommond = "sr";
+        }, 1500);
+    }
+
+    @Override public void receivedData(String msg) {
+        Logger.e("commond result", msg);
+        switch (currentCommond) {
+            case "v":
+                if (msg.contains("")) {
+
+                }
+                break;
+            case "sp":
+                if (msg.contains("pwm set done")) {
+                    Logger.e("commond" + currentCommond, msg);
+                } else {
+                    Logger.e("commond" + currentCommond, "设置失败!");
+                }
+                break;
+            case "sr":
+                if (msg.contains("remind set done")) {
+                    Logger.e("commond" + currentCommond, msg);
+                } else {
+                    Logger.e("commond" + currentCommond, "设置失败!");
+                }
+                dissmiss();
+                break;
+            default:
+                break;
+
+        }
+    }
+
+    @Override public void disConnected() {
+
     }
 }

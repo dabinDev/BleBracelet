@@ -8,9 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bigkoo.pickerview.builder.TimePickerBuilder;
-import com.bigkoo.pickerview.listener.OnTimeSelectListener;
-import com.bigkoo.pickerview.view.TimePickerView;
+import com.bigkoo.pickerview.TimePickerView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.gyf.immersionbar.ImmersionBar;
@@ -21,8 +19,13 @@ import com.lzy.okgo.model.Response;
 import com.vise.log.ViseLog;
 import com.vise.xsnow.event.BusManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -42,8 +45,6 @@ import cn.dabin.opensource.ble.util.StringUtils;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
-import static com.vise.utils.handler.HandlerUtil.runOnUiThread;
-
 /**
  * Project :  BleBracelet.
  * Package name: cn.dabin.opensource.ble.ui.fragment
@@ -53,7 +54,7 @@ import static com.vise.utils.handler.HandlerUtil.runOnUiThread;
  * Changed time: 2019/8/27 16:26
  * Class description:
  */
-public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTimeSelectListener, HomeAct.BleCallBack {
+public class HomeFrgm extends BaseFragment implements View.OnClickListener, HomeAct.BleCallBack, TimePickerView.OnTimeSelectListener {
     private final String commond_a = "a";
     private final String commond_e = "e";
     private final String commond_f = "f";
@@ -74,6 +75,7 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
     private TextView tvErrorUse;
     private TextView tvLongUseTime;
     private TextView tvUseDistanceUse;
+    private TextView tvHeart;
     private TimePickerView pvTime;
     private String currentCommond = "";
     private final String TAG = HomeFrgm.this.getClass().getName();
@@ -98,7 +100,7 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
                     .navigationBarEnable(false)
                     .init();
             ((HomeAct) getActivity()).setCallBack(this);
-            reqBleData();
+            switchDate(new Date());
 
         }
     }
@@ -141,7 +143,6 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
                     } else {
                         showCenterInfoMsg("提交失败");
                     }
-                    switchDate(new Date());
                 }
 
                 @Override public void onError(Response<String> response) {
@@ -171,20 +172,19 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
         tvNearDistanceUse = view.findViewById(R.id.tv_near_distance_use);
         tvErrorUse = view.findViewById(R.id.tv_error_use);
         tvLongUseTime = view.findViewById(R.id.tv_long_use_time);
-        tvUseDistanceUse = view.findViewById(R.id.tv_use_distance_use);
+        tvUseDistanceUse = view.findViewById(R.id.tv_use_distance_average);
+        tvHeart = view.findViewById(R.id.tv_heart);
         tvToLast.setOnClickListener(this);
         tvHomeTime.setOnClickListener(this);
         tvToNext.setOnClickListener(this);
         tvReset.setOnClickListener(this);
+        Calendar endDate = Calendar.getInstance();
         //时间选择器
-        pvTime = new TimePickerBuilder(getContext(), this)
+        pvTime = new TimePickerView.Builder(getContext(), this)
                 .setType(new boolean[]{true, true, true, false, false, false})// 默认全部显示
                 .setBgColor(getResources().getColor(R.color.color_white))
                 .setCancelText("取消")//取消按钮文字
                 .setSubmitText("确定")//确认按钮文字
-                .setContentTextSize(18)//设置滚轮中间文字
-                .setTitleSize(20)//标题文字大小
-                .setTitleText("Title")//标题文字
                 .setOutSideCancelable(false)//点击屏幕，点在控件外部范围时，是否取消显示
                 .isCyclic(true)//是否循环滚动
                 .setTitleText("选择日期")
@@ -192,9 +192,9 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
                 .setTitleColor(getResources().getColor(R.color.colorSecondaryText))//标题文字颜色
                 .setSubmitColor(getResources().getColor(R.color.colorPrimary))//确定按钮文字颜色
                 .setCancelColor(getResources().getColor(R.color.colorSecondaryText))//取消按钮文字颜色
-                .setTitleBgColor(getResources().getColor(R.color.colorDividerGray))//标题背景颜色 Night mode
-                .setBgColor(getResources().getColor(R.color.colorBg))//滚轮背景颜色 Night mode
-                //.setRangDate(startDate, endDate)//起始终止年月日设定
+                .setTitleBgColor(getResources().getColor(R.color.colorBgGray))//标题背景颜色 Night mode
+                .setBgColor(getResources().getColor(R.color.colorWhite))//滚轮背景颜色 Night mode
+                .setRangDate(null, endDate)//起始终止年月日设定
                 .setLabel("年", "月", "日", "时", "分", "秒")//默认设置为年月日时分秒
                 .isCenterLabel(true) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
                 .isDialog(false)//是否显示为对话框样式
@@ -235,22 +235,64 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
     }
 
     private void switchDate(Date date) {
-        String time = new SimpleDateFormat("MM月dd日").format(date);
-        tvHomeTime.setText(time);
+        loading("加载中");
         //todo
         HttpParams params1 = new HttpParams();
         params1.put("userMobile", readMobile());
         params1.put("date", DateUtil.dateToStr(new Date()));
-        params1.put("type", "2");
+        params1.put("type", "1");
         OkGo.<String>get(BleApi.getUrl(BleApi.getShDataList)).params(params1).headers(new HttpHeaders("token", readToken())).tag(this).execute(new MineStringCallback() {
             @Override public void success(String result) {
                 dissmiss();
-                ResultMsg bean = new Gson().fromJson(result, ResultMsg.class);
-                if (bean.isSuccess()) {
-                    showCenterInfoMsg("提交成功");
-                } else {
-                    showCenterInfoMsg("提交失败");
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(result);
+                    if (jsonObject.optBoolean("success")) {
+                        JSONArray model = jsonObject.optJSONArray("model");
+                        if (model != null && model.optJSONObject(0) != null) {
+                            String value = model.optJSONObject(0).optString("value");
+                            JSONObject valueObject = new JSONObject(value);
+                            String dianlinag = valueObject.optString("dianlinag");
+                            String cuowuyongyanshichang = valueObject.optString("cuowuyongyanshichang");
+                            String yongyanpingjinjuli = valueObject.optString("yongyanpingjinjuli");
+                            String jiuzuo = valueObject.optString("jiuzuo");
+                            long tongbuTime = valueObject.optLong("tongbuTime");
+                            String jinjuliyanshichang = valueObject.optString("jinjuliyanshichang");
+                            String yigongfenzhong = valueObject.optString("yigongfenzhong");
+                            String zuijincuowujuli = valueObject.optString("zuijincuowujuli");
+                            String baifenbi = valueObject.optString("baifenbi");
+                            int step = valueObject.optInt("step");
+                            String zhi = valueObject.optString("zhi");
+
+                            setHealthByStep(step);
+                            setBatteryInfo(dianlinag);
+                            setLastUploadTime(tongbuTime);
+                            //设置顶部当前今日时间
+                            String time = new SimpleDateFormat("MM月dd日").format(date);
+                            tvHomeTime.setText(time);
+                            //用眼总时长
+                            tvTotalUse.setText(StringUtils.valueWithZero(yigongfenzhong));
+                            //错误用眼时长
+                            tvErrorUse.setText(StringUtils.valueWithZero(cuowuyongyanshichang));
+                            //长时间用眼数据
+                            tvLongUseTime.setText(StringUtils.valueWithZero(cuowuyongyanshichang));
+                            //近距离用眼数据
+                            tvNearDistanceUse.setText(StringUtils.valueWithZero(jinjuliyanshichang));
+                            //近距离用眼数据
+                            tvUseDistanceUse.setText(StringUtils.valueWithZero(yongyanpingjinjuli));
+                            //心 属性
+                            tvHeart.setText(StringUtils.value(zhi));
+
+
+                        }
+                    } else {
+                        showTopWrongMsg("数据读取失败");
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+                dissmiss();
             }
 
             @Override public void onError(Response<String> response) {
@@ -263,28 +305,9 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
     @Override public void receivedData(String received) {
         String msg = received.toLowerCase();
         if (StringUtils.value(msg).contains("v:") && StringUtils.value(msg).contains("mv")) {
-            msg = msg.replace("mv", "").replace("v:", "");
-            Double current = Double.valueOf(msg);
-            int battary = Double.valueOf(current / 1000).intValue();
-            if (battary > 4.1) {
-                tvBattery.setText(StringUtils.value("当前电量:" + 100 + "%"));
-            } else if (battary < 3.6) {
-                tvBattery.setText(StringUtils.value("当前电量:" + 17 + "%"));
-            } else {
-                battary = (int) ((battary - 3.6) * 10 * 16.6 + 17);
-                tvBattery.setText(StringUtils.value("当前电量:" + battary + "%"));
-            }
-            String time = new SimpleDateFormat("MM月dd日 HH:mm").format(new Date());
-            tvLastResetTime.setText(StringUtils.value("上次同步时间:" + time));
-            double finalBattary = battary;
-            runOnUiThread(() -> {
-                BleInfo info = BleApplication.getBleInfo(readMac());
-                if (info == null) {
-                    info = new BleInfo();
-                }
-                info.setCurrentBattery((int) finalBattary);
-                info.save();
-            });
+            //msg = msg.replace("mv", "").replace("v:", "");
+            setBatteryInfo(msg);
+            setLastUploadTime(System.currentTimeMillis());
         } else if (StringUtils.value(msg).contains("t:") && StringUtils.value(msg).contains("b:")) {
             //获取步数信息
             StepInfo stepInfo = new StepInfo(msg);
@@ -312,6 +335,42 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, OnTi
                 ViseLog.json(json);
             }
         }
+    }
+
+    private void setLastUploadTime(long timeStmp) {
+        String time = new SimpleDateFormat("MM月dd日 HH:mm").format(DateUtil.removeSecond(timeStmp));
+        tvLastResetTime.setText(StringUtils.value("上次同步时间:" + time));
+    }
+
+    private void setHealthByStep(int step) {
+        if (8000 > step) {
+            tvHeart.setTextSize(13);
+            tvHeart.setText("不合格");
+        } else if (step > 8000 && 10000 > step) {
+            tvHeart.setTextSize(15);
+            tvHeart.setText("良好");
+        } else if (step >= 10000) {
+            tvHeart.setTextSize(20);
+            tvHeart.setText("优");
+        } else {
+            tvHeart.setText("");
+        }
+
+    }
+
+    private int setBatteryInfo(String msg) {
+        String tempMsg = msg.toLowerCase().replace("mv", "").replace("v:", "");
+        Double current = Double.valueOf(tempMsg);
+        int battary = Double.valueOf(current / 1000).intValue();
+        if (battary > 4.1) {
+            tvBattery.setText(StringUtils.value("当前电量:" + 100 + "%"));
+        } else if (battary < 3.6) {
+            tvBattery.setText(StringUtils.value("当前电量:" + 17 + "%"));
+        } else {
+            battary = (int) ((battary - 3.6) * 10 * 16.6 + 17);
+            tvBattery.setText(StringUtils.value("当前电量:" + battary + "%"));
+        }
+        return battary;
     }
 
     @Override public void disConnected() {
