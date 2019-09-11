@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:weightSum="8"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -34,7 +35,8 @@
             <ImageView
                 android:id="@+id/tv_to_last"
                 android:layout_width="wrap_content"
-                android:src="@mipmap/ic_to_left"
+                android:src="@mipmap/ic_last"
+                android:scaleType="centerInside"
                 android:paddingStart="20dp"
                 android:layout_height="match_parent" />
 
@@ -49,8 +51,9 @@
             <ImageView
                 android:id="@+id/tv_to_next"
                 android:layout_width="wrap_content"
-                android:src="@mipmap/ic_to_right"
+                android:src="@mipmap/ic_next"
                 android:paddingEnd="20dp"
+                android:scaleType="centerInside"
                 android:layout_height="match_parent" />
         </LinearLayout>
 
@@ -241,7 +244,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical|end"
-                    android:text="580"
+                    android:text="0"
                     android:textColor="@color/colorSecondaryText"
                     android:textSize="@dimen/text_size_20" />
 
@@ -326,7 +329,7 @@
                             android:layout_height="0dp"
                             android:layout_weight="1"
                             android:gravity="center_vertical|end"
-                            android:text="580"
+                            android:text="0"
                             android:textColor="@color/colorSecondaryText"
                             android:textSize="@dimen/text_size_20" />
 
@@ -391,7 +394,7 @@
                             android:layout_height="0dp"
                             android:layout_weight="1"
                             android:gravity="center_vertical|end"
-                            android:text="580"
+                            android:text="0"
                             android:textColor="@color/colorSecondaryText"
                             android:textSize="@dimen/text_size_20" />
 
@@ -464,7 +467,7 @@
                             android:layout_height="0dp"
                             android:layout_weight="1"
                             android:gravity="center_vertical|end"
-                            android:text="580"
+                            android:text="0"
                             android:textColor="@color/colorSecondaryText"
                             android:textSize="@dimen/text_size_20" />
 
@@ -530,7 +533,7 @@
                             android:layout_height="0dp"
                             android:layout_weight="1"
                             android:gravity="center_vertical|end"
-                            android:text="580"
+                            android:text="0"
                             android:textColor="@color/colorSecondaryText"
                             android:textSize="@dimen/text_size_20" />
 
@@ -575,7 +578,7 @@
                 <TextView
                     android:id="@+id/tv_heart"
                     android:layout_width="wrap_content"
-                    android:text="优"
+                    tools:text="优"
                     android:background="@drawable/ic_home_heart"
                     android:textColor="@color/color_white"
                     android:textSize="@dimen/text_size_20"

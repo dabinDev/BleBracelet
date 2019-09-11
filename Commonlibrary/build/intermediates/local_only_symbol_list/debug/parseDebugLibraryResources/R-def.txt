@@ -1,0 +1,26 @@
+R_DEF: Internal format may change without notice
+local
+color black
+color black_top
+color button_blue
+color colorMain
+color colorPrimary
+color colorWhite
+color color_99000000
+color color_bbbbbb
+color color_gray_transpaint
+color green
+color public_blue
+color public_gb_color
+color public_greed
+color public_line_color
+color public_orange
+color public_red
+color search_bg
+color shallowWhite
+color title_color
+color transparent
+drawable ic_placeholder
+drawable image_placeholder
+mipmap icon_header_default
+mipmap icon_img_blank

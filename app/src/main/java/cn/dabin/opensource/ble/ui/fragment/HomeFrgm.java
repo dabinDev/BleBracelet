@@ -34,6 +34,7 @@ import cn.dabin.opensource.ble.base.BaseFragment;
 import cn.dabin.opensource.ble.global.BleApplication;
 import cn.dabin.opensource.ble.network.BleApi;
 import cn.dabin.opensource.ble.network.bean.BleInfo;
+import cn.dabin.opensource.ble.network.bean.HomeData;
 import cn.dabin.opensource.ble.network.bean.ResultMsg;
 import cn.dabin.opensource.ble.network.bean.SaveShData;
 import cn.dabin.opensource.ble.network.bean.StepInfo;
@@ -55,9 +56,13 @@ import okhttp3.RequestBody;
  * Class description:
  */
 public class HomeFrgm extends BaseFragment implements View.OnClickListener, HomeAct.BleCallBack, TimePickerView.OnTimeSelectListener {
-    private final String commond_a = "a";
-    private final String commond_e = "e";
-    private final String commond_f = "f";
+    private final String COMMAND_BATTERY_INFO = "v";//电量信息
+    private final String COMMAND_ALL_USE_EYE = "a";//全部用眼信息数据
+    private final String COMMAND_ALL_STEP = "e";//全部步数
+    private final String COMMAND_NEAR_USE_EYE = "f";//近距离用眼数据
+    private final String COMMAND_LONG_TIME_SEAT = "l";//久坐数据
+    private final String COMMAND_TIME = "t";//时间
+
     private LinearLayout llTop1;
     private ImageView tvToLast;
     private TextView tvHomeTime;
@@ -81,6 +86,8 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
     private final String TAG = HomeFrgm.this.getClass().getName();
     private List<StepInfo> stepInfoList = new ArrayList<>();
     private List<UseEyeInfo> useEyeInfoList = new ArrayList<>();
+    private Date currentDate;
+    private HomeData homeData;
 
 
     @Override protected int getLayoutId() {
@@ -100,27 +107,30 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
                     .navigationBarEnable(false)
                     .init();
             ((HomeAct) getActivity()).setCallBack(this);
-            switchDate(new Date());
+            currentDate = new Date();
+            switchDate(currentDate);
 
         }
     }
 
     private void reqBleData() {
         loading("读取手环数据中");
-        new Handler().postDelayed(() -> ((HomeAct) getActivity()).sendMsg("v"), 500);
+        homeData = new HomeData();//用于存储今日数据
+        ((HomeAct) getActivity()).sendMsg(COMMAND_BATTERY_INFO);
+        ((HomeAct) getActivity()).sendMsg(COMMAND_TIME);
         new Handler().postAtTime(() -> {
             loading("获取用眼信息");
-            ((HomeAct) getActivity()).sendMsg(commond_a);
-            currentCommond = commond_a;
+            ((HomeAct) getActivity()).sendMsg(COMMAND_ALL_USE_EYE);
+            currentCommond = COMMAND_ALL_USE_EYE;
         }, 1000);
         new Handler().postDelayed(() -> {
             loading("读取步数信息");
-            ((HomeAct) getActivity()).sendMsg(commond_e);
-            currentCommond = commond_e;
+            ((HomeAct) getActivity()).sendMsg(COMMAND_ALL_STEP);
+            currentCommond = COMMAND_ALL_STEP;
         }, 2500);
         new Handler().postDelayed(() -> {
-            ((HomeAct) getActivity()).sendMsg(commond_f);
-            currentCommond = commond_f;
+            ((HomeAct) getActivity()).sendMsg(COMMAND_NEAR_USE_EYE);
+            currentCommond = COMMAND_NEAR_USE_EYE;
         }, 5000);
         new Handler().postDelayed(() -> {
             loading("同步数据中");
@@ -215,11 +225,13 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
     @Override public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_to_last:
+                switchDate(DateUtil.strToDate(DateUtil.getBeforeDay(currentDate)));
                 break;
             case R.id.tv_home_time:
                 pvTime.show();
                 break;
             case R.id.tv_to_next:
+                switchDate(DateUtil.strToDate(DateUtil.getAfterDay(currentDate)));
                 break;
             case R.id.tv_reset:
                 reqBleData();
@@ -236,10 +248,13 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
 
     private void switchDate(Date date) {
         loading("加载中");
-        //todo
+        //设置顶部当前今日时间
+        String time = new SimpleDateFormat("MM月dd日").format(date);
+        tvHomeTime.setText(time);
+        currentDate = date;
         HttpParams params1 = new HttpParams();
         params1.put("userMobile", readMobile());
-        params1.put("date", DateUtil.dateToStr(new Date()));
+        params1.put("date", DateUtil.getStringDateShort(currentDate));
         params1.put("type", "1");
         OkGo.<String>get(BleApi.getUrl(BleApi.getShDataList)).params(params1).headers(new HttpHeaders("token", readToken())).tag(this).execute(new MineStringCallback() {
             @Override public void success(String result) {
@@ -267,26 +282,23 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
                             setHealthByStep(step);
                             setBatteryInfo(dianlinag);
                             setLastUploadTime(tongbuTime);
-                            //设置顶部当前今日时间
-                            String time = new SimpleDateFormat("MM月dd日").format(date);
-                            tvHomeTime.setText(time);
                             //用眼总时长
                             tvTotalUse.setText(StringUtils.valueWithZero(yigongfenzhong));
                             //错误用眼时长
                             tvErrorUse.setText(StringUtils.valueWithZero(cuowuyongyanshichang));
                             //长时间用眼数据
-                            tvLongUseTime.setText(StringUtils.valueWithZero(cuowuyongyanshichang));
+                            tvLongUseTime.setText(StringUtils.valueWithZero(jiuzuo));
                             //近距离用眼数据
                             tvNearDistanceUse.setText(StringUtils.valueWithZero(jinjuliyanshichang));
                             //近距离用眼数据
                             tvUseDistanceUse.setText(StringUtils.valueWithZero(yongyanpingjinjuli));
                             //心 属性
                             tvHeart.setText(StringUtils.value(zhi));
-
-
+                        } else {
+                            showTopWrongMsg("该天没有数据！");
                         }
                     } else {
-                        showTopWrongMsg("数据读取失败");
+                        showTopWrongMsg("该天没有数据！");
                     }
 
                 } catch (JSONException e) {
@@ -305,9 +317,7 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
     @Override public void receivedData(String received) {
         String msg = received.toLowerCase();
         if (StringUtils.value(msg).contains("v:") && StringUtils.value(msg).contains("mv")) {
-            //msg = msg.replace("mv", "").replace("v:", "");
-            setBatteryInfo(msg);
-            setLastUploadTime(System.currentTimeMillis());
+            homeData.setDianlinag(msg);//设置电量数据
         } else if (StringUtils.value(msg).contains("t:") && StringUtils.value(msg).contains("b:")) {
             //获取步数信息
             StepInfo stepInfo = new StepInfo(msg);
@@ -318,17 +328,17 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
         } else if (StringUtils.value(msg).contains("t:") && StringUtils.value(msg).contains("r:")) {
             //获取步数信息
             UseEyeInfo useEyeInfo = new UseEyeInfo(msg);
-            if (currentCommond.equals(commond_a)) {
+            if (currentCommond.equals(COMMAND_ALL_USE_EYE)) {
                 useEyeInfoList.add(useEyeInfo);
                 String json = new Gson().toJson(useEyeInfoList, new TypeToken<List<UseEyeInfo>>() {
                 }.getType());
                 ViseLog.json(json);
-            } else if (currentCommond.equals(commond_e)) {
+            } else if (currentCommond.equals(COMMAND_ALL_STEP)) {
                 useEyeInfoList.add(useEyeInfo);
                 String json = new Gson().toJson(useEyeInfoList, new TypeToken<List<UseEyeInfo>>() {
                 }.getType());
                 ViseLog.json(json);
-            } else if (currentCommond.equals(commond_f)) {
+            } else if (currentCommond.equals(COMMAND_NEAR_USE_EYE)) {
                 useEyeInfoList.add(useEyeInfo);
                 String json = new Gson().toJson(useEyeInfoList, new TypeToken<List<UseEyeInfo>>() {
                 }.getType());

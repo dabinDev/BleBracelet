@@ -1,14 +1,15 @@
 package cn.dabin.opensource.ble.util;
+
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Random;
+
 /**
  * Project :  BleBracelet.
  * Package name: cn.dabin.opensource.ble.util
@@ -22,13 +23,14 @@ public class DateUtil {
 
 
     public static String pattern = "yyyy-MM-dd";
-    public static SimpleDateFormat formatter = new SimpleDateFormat(pattern);
-    public static SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
+    public static SimpleDateFormat formatter;
+    public static SimpleDateFormat formatter2;
 
-    public static DateTimeFormatter getDateTimeFormatter() {
-        return dateFormatter;
+    static {
+        formatter = new SimpleDateFormat(pattern);
+        formatter2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
+
 
     /**
      * 获取现在时间
@@ -88,6 +90,19 @@ public class DateUtil {
     }
 
     /**
+     * 获取现在时间
+     *
+     * @return 返回短时间字符串格式yyyy-MM-dd
+     */
+    public static String getStringDateShort(Date date) {
+        if (date == null) {
+            return "";
+        }
+        String dateString = formatter.format(date);
+        return dateString;
+    }
+
+    /**
      * 获取时间 小时:分;秒 HH:mm:ss
      *
      * @return
@@ -135,10 +150,6 @@ public class DateUtil {
         return dateString;
     }
 
-    public static String dateToStr(java.time.LocalDate dateDate) {
-        String dateString = dateFormatter.format(dateDate);
-        return dateString;
-    }
 
     /**
      * 将短时间格式字符串转换为时间 yyyy-MM-dd
@@ -379,10 +390,7 @@ public class DateUtil {
         if ((year % 400) == 0)
             return true;
         else if ((year % 4) == 0) {
-            if ((year % 100) == 0)
-                return false;
-            else
-                return true;
+            return (year % 100) != 0;
         } else
             return false;
     }
@@ -439,15 +447,12 @@ public class DateUtil {
         cal2.setTime(date2);
         int subYear = cal1.get(Calendar.YEAR) - cal2.get(Calendar.YEAR);
         if (0 == subYear) {
-            if (cal1.get(Calendar.WEEK_OF_YEAR) == cal2.get(Calendar.WEEK_OF_YEAR))
-                return true;
+            return cal1.get(Calendar.WEEK_OF_YEAR) == cal2.get(Calendar.WEEK_OF_YEAR);
         } else if (1 == subYear && 11 == cal2.get(Calendar.MONTH)) {
             // 如果12月的最后一周横跨来年第一周的话则最后一周即算做来年的第一周
-            if (cal1.get(Calendar.WEEK_OF_YEAR) == cal2.get(Calendar.WEEK_OF_YEAR))
-                return true;
+            return cal1.get(Calendar.WEEK_OF_YEAR) == cal2.get(Calendar.WEEK_OF_YEAR);
         } else if (-1 == subYear && 11 == cal1.get(Calendar.MONTH)) {
-            if (cal1.get(Calendar.WEEK_OF_YEAR) == cal2.get(Calendar.WEEK_OF_YEAR))
-                return true;
+            return cal1.get(Calendar.WEEK_OF_YEAR) == cal2.get(Calendar.WEEK_OF_YEAR);
         }
         return false;
     }
@@ -609,7 +614,6 @@ public class DateUtil {
     public static boolean RightDate(String date) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        ;
         if (date == null)
             return false;
         if (date.length() > 10) {
@@ -769,6 +773,38 @@ public class DateUtil {
     }
 
     /**
+     * @param today 当前天数 YYYY-MM-DD
+     * @return 前一天的 YYYY-mm-dd
+     */
+    public static String getBeforeDay(Date today) {
+        String preDate = "";
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        c.setTime(today);
+        int day1 = c.get(Calendar.DATE);
+        c.set(Calendar.DATE, day1 - 1);
+        preDate = sdf.format(c.getTime());
+        return preDate;
+    }
+
+
+    /**
+     * @param today 当前天数 YYYY-MM-DD
+     * @return 后一天的 YYYY-mm-dd
+     */
+    public static String getAfterDay(Date today) {
+        String preDate = "";
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        c.setTime(today);
+        int day1 = c.get(Calendar.DATE);
+        c.set(Calendar.DATE, day1 + 1);
+        preDate = sdf.format(c.getTime());
+        return preDate;
+    }
+
+
+    /**
      * 获取当前时间的后一天时间
      *
      * @param cl
@@ -854,17 +890,15 @@ public class DateUtil {
         int second = 0;
         int millisecond = 0;
         Calendar newCalendar = Calendar.getInstance();
-        newCalendar.set(Calendar.YEAR,year);
-        newCalendar.set(Calendar.MONTH,month);
-        newCalendar.set(Calendar.DAY_OF_MONTH,day);
-        newCalendar.set(Calendar.HOUR_OF_DAY,hour);
-        newCalendar.set(Calendar.MINUTE,minute);
-        newCalendar.set(Calendar.SECOND,second);
-        newCalendar.set(Calendar.MILLISECOND,millisecond);
-        return newCalendar.getTimeInMillis()/1000;
+        newCalendar.set(Calendar.YEAR, year);
+        newCalendar.set(Calendar.MONTH, month);
+        newCalendar.set(Calendar.DAY_OF_MONTH, day);
+        newCalendar.set(Calendar.HOUR_OF_DAY, hour);
+        newCalendar.set(Calendar.MINUTE, minute);
+        newCalendar.set(Calendar.SECOND, second);
+        newCalendar.set(Calendar.MILLISECOND, millisecond);
+        return newCalendar.getTimeInMillis() / 1000;
     }
-
-
 
 
 }

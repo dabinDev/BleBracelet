@@ -93,22 +93,13 @@ public class SettingFrgm extends BaseFragment implements RadioGroup.OnCheckedCha
     @Override public void onCheckedChanged(RadioGroup radioGroup, int i) {
         switch (radioGroup.getId()) {
             case R.id.rg_distance:
-                RadioButton rg1 = (radioGroup.findViewById(radioGroup.getCheckedRadioButtonId()));
-                if (rg1 != null) {
-                    currentDistance = String.valueOf(rg1.getTag());
-                }
+
                 break;
             case R.id.rg_shock:
-                RadioButton rg2 = (radioGroup.findViewById(radioGroup.getCheckedRadioButtonId()));
-                if (rg2 != null) {
-                    currentShock = String.valueOf(rg2.getTag());
-                }
+
                 break;
             case R.id.rg_tip_time:
-                RadioButton rg3 = (radioGroup.findViewById(radioGroup.getCheckedRadioButtonId()));
-                if (rg3 != null) {
-                    currentTipTime = String.valueOf(rg3.getTag());
-                }
+
                 break;
             default:
                 break;
@@ -117,6 +108,18 @@ public class SettingFrgm extends BaseFragment implements RadioGroup.OnCheckedCha
     }
 
     private void setProperty() {
+        RadioButton rg1 = (rgDistance.findViewById(rgDistance.getCheckedRadioButtonId()));
+        if (rg1 != null) {
+            currentDistance = String.valueOf(rg1.getTag());
+        }
+        RadioButton rg2 = (rgShock.findViewById(rgShock.getCheckedRadioButtonId()));
+        if (rg2 != null) {
+            currentShock = String.valueOf(rg2.getTag());
+        }
+        RadioButton rg3 = (rgTipTime.findViewById(rgTipTime.getCheckedRadioButtonId()));
+        if (rg3 != null) {
+            currentTipTime = String.valueOf(rg3.getTag());
+        }
         new Handler().postDelayed(() -> {
             ((HomeAct) getActivity()).sendMsg("v");
             currentCommond = "v";

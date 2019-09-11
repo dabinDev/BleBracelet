@@ -1,0 +1,17 @@
+R_DEF: Internal format may change without notice
+local
+dimen activity_horizontal_margin
+dimen activity_vertical_margin
+string msg_compress_failed
+string msg_crop_canceled
+string msg_crop_failed
+string msg_operation_canceled
+string tip_compress
+string tip_compress_failed
+string tip_no_camera
+string tip_permission_camera
+string tip_permission_camera_storage
+string tip_permission_storage
+string tip_tips
+string tip_type_not_image
+xml file_paths1

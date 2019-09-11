@@ -104,13 +104,13 @@
         <RadioButton
             android:id="@+id/radio_shock_low"
             style="@style/style_radio_check_label"
-            android:tag="200"
+            android:tag="2"
             android:text="若" />
 
         <RadioButton
             android:id="@+id/radio_shock_middle"
             style="@style/style_radio_check_label"
-            android:tag="500"
+            android:tag="4"
             android:checked="true"
             android:text="中" />
 
@@ -118,7 +118,7 @@
         <RadioButton
             android:id="@+id/radio_shock_heigh"
             style="@style/style_radio_check_label"
-            android:tag="1000"
+            android:tag="10"
             android:text="强" />
 
 
@@ -154,13 +154,13 @@
         <RadioButton
             android:id="@+id/radio_tip_time_low"
             style="@style/style_radio_check_label"
-            android:tag="200"
+            android:tag="2"
             android:text="2s" />
 
         <RadioButton
             android:id="@+id/radio_tip_time_middle"
             style="@style/style_radio_check_label"
-            android:tag="500"
+            android:tag="5"
             android:checked="true"
             android:text="5s" />
 
@@ -168,7 +168,7 @@
         <RadioButton
             android:id="@+id/radio_tip_time_heigh"
             style="@style/style_radio_check_label"
-            android:tag="1000"
+            android:tag="10"
             android:text="10s" />
 
     </RadioGroup>
