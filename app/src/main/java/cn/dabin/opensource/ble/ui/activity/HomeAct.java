@@ -400,7 +400,10 @@ public class HomeAct extends BaseActivity {
                 ViseLog.e("DeviceControl--- characteristicUUid" + characteristic3.getUuid().toString());
                 ViseLog.e("DeviceControl--- charaProp" + charaProp3);
                 initNotice(service3, characteristic3, charaProp3);
-                new Handler().postDelayed(this::dissmiss, 500);
+                new Handler().postDelayed(() -> {
+                    dissmiss();
+                    showCenterInfoMsg("蓝牙连接成功");
+                }, 1000);
             }
         }
     }
@@ -459,7 +462,7 @@ public class HomeAct extends BaseActivity {
     }
 
 
-    public void sendMsg(String msg) {
+    public synchronized void sendMsg(String msg) {
         runOnUiThread(() -> {
             byte[] value;
             //send data to service

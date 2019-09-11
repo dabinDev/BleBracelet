@@ -16,7 +16,6 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.HttpHeaders;
 import com.lzy.okgo.model.HttpParams;
 import com.lzy.okgo.model.Response;
-import com.vise.log.ViseLog;
 import com.vise.xsnow.event.BusManager;
 
 import org.json.JSONArray;
@@ -37,11 +36,13 @@ import cn.dabin.opensource.ble.network.bean.BleInfo;
 import cn.dabin.opensource.ble.network.bean.HomeData;
 import cn.dabin.opensource.ble.network.bean.ResultMsg;
 import cn.dabin.opensource.ble.network.bean.SaveShData;
+import cn.dabin.opensource.ble.network.bean.SeatInfo;
 import cn.dabin.opensource.ble.network.bean.StepInfo;
 import cn.dabin.opensource.ble.network.bean.UseEyeInfo;
 import cn.dabin.opensource.ble.network.callback.MineStringCallback;
 import cn.dabin.opensource.ble.ui.activity.HomeAct;
 import cn.dabin.opensource.ble.util.DateUtil;
+import cn.dabin.opensource.ble.util.Logger;
 import cn.dabin.opensource.ble.util.StringUtils;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -61,7 +62,7 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
     private final String COMMAND_ALL_STEP = "e";//全部步数
     private final String COMMAND_NEAR_USE_EYE = "f";//近距离用眼数据
     private final String COMMAND_LONG_TIME_SEAT = "l";//久坐数据
-    private final String COMMAND_TIME = "t";//时间
+    //private final String COMMAND_TIME = "t";//时间
 
     private LinearLayout llTop1;
     private ImageView tvToLast;
@@ -85,7 +86,13 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
     private String currentCommond = "";
     private final String TAG = HomeFrgm.this.getClass().getName();
     private List<StepInfo> stepInfoList = new ArrayList<>();
-    private List<UseEyeInfo> useEyeInfoList = new ArrayList<>();
+    //全部用眼信息
+    private List<UseEyeInfo> useEyeAllList = new ArrayList<>();
+    //近距离用眼数据
+    private List<UseEyeInfo> useEyeNearList = new ArrayList<>();
+    //久坐数据
+    private List<Long> longTimeSetList = new ArrayList<>();
+
     private Date currentDate;
     private HomeData homeData;
 
@@ -113,54 +120,70 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
         }
     }
 
-    private void reqBleData() {
+
+    //**获取当前电量
+    private void reqBleBatteryInfo() {
         loading("读取手环数据中");
-        homeData = new HomeData();//用于存储今日数据
+        currentCommond = COMMAND_BATTERY_INFO;
         ((HomeAct) getActivity()).sendMsg(COMMAND_BATTERY_INFO);
-        ((HomeAct) getActivity()).sendMsg(COMMAND_TIME);
-        new Handler().postAtTime(() -> {
-            loading("获取用眼信息");
+    }
+
+    /**
+     * 获取全部用眼信息
+     */
+    private void reqBleUseEyeAll() {
+        loading("读取用眼信息");
+
+        new Handler().postDelayed(() -> {
             ((HomeAct) getActivity()).sendMsg(COMMAND_ALL_USE_EYE);
             currentCommond = COMMAND_ALL_USE_EYE;
         }, 1000);
         new Handler().postDelayed(() -> {
-            loading("读取步数信息");
+            ((HomeAct) getActivity()).sendMsg(COMMAND_BATTERY_INFO);
+        }, 2000);
+    }
+
+
+    /**
+     * 获取步数信息
+     */
+    private void reqBleFootStep() {
+        loading("步数信息");
+        new Handler().postDelayed(() -> {
             ((HomeAct) getActivity()).sendMsg(COMMAND_ALL_STEP);
             currentCommond = COMMAND_ALL_STEP;
-        }, 2500);
+        }, 1000);
+        new Handler().postDelayed(() -> {
+            ((HomeAct) getActivity()).sendMsg(COMMAND_BATTERY_INFO);
+        }, 2000);
+    }
+
+    /**
+     * 获取近距离用眼信息
+     */
+    private void reqBleUseEyeEyeNear() {
+        loading("近距离用眼信息");
         new Handler().postDelayed(() -> {
             ((HomeAct) getActivity()).sendMsg(COMMAND_NEAR_USE_EYE);
             currentCommond = COMMAND_NEAR_USE_EYE;
-        }, 5000);
+        }, 1000);
         new Handler().postDelayed(() -> {
-            loading("同步数据中");
-            String json = new Gson().toJson(useEyeInfoList, new TypeToken<List<UseEyeInfo>>() {
-            }.getType());
-            SaveShData shData = new SaveShData();
-            shData.setUserMobile(readMobile());
-            shData.setValue(readMobile());
-            shData.setType("2");
-            shData.setCreateTime(DateUtil.dateToStr(new Date()));
-            shData.setValue(json);
-            String toJson = new Gson().toJson(shData);
-            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), toJson);
-            OkGo.<String>post(BleApi.getUrl(BleApi.saveShaData)).upRequestBody(requestBody).headers(new HttpHeaders("token", readToken())).tag(this).execute(new MineStringCallback() {
-                @Override public void success(String result) {
-                    dissmiss();
-                    ResultMsg bean = new Gson().fromJson(result, ResultMsg.class);
-                    if (bean.isSuccess()) {
-                        showCenterInfoMsg("提交成功");
-                    } else {
-                        showCenterInfoMsg("提交失败");
-                    }
-                }
+            ((HomeAct) getActivity()).sendMsg(COMMAND_BATTERY_INFO);
+        }, 2000);
+    }
 
-                @Override public void onError(Response<String> response) {
-                    super.onError(response);
-                    dissmiss();
-                }
-            });
-        }, 7000);
+    /**
+     * 获取获取久坐数据
+     */
+    private void reqBleLongTimeSeat() {
+        loading("长时间用眼信息");
+        new Handler().postDelayed(() -> {
+            ((HomeAct) getActivity()).sendMsg(COMMAND_LONG_TIME_SEAT);
+            currentCommond = COMMAND_LONG_TIME_SEAT;
+        }, 1000);
+        new Handler().postDelayed(() -> {
+            ((HomeAct) getActivity()).sendMsg(COMMAND_BATTERY_INFO);
+        }, 2000);
     }
 
 
@@ -234,7 +257,8 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
                 switchDate(DateUtil.strToDate(DateUtil.getAfterDay(currentDate)));
                 break;
             case R.id.tv_reset:
-                reqBleData();
+                homeData = new HomeData();//用于存储今日数据
+                reqBleBatteryInfo();
                 break;
             default:
                 break;
@@ -316,34 +340,98 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
 
     @Override public void receivedData(String received) {
         String msg = received.toLowerCase();
-        if (StringUtils.value(msg).contains("v:") && StringUtils.value(msg).contains("mv")) {
+        if (COMMAND_BATTERY_INFO.equals(currentCommond) && StringUtils.value(msg).contains("v:") && StringUtils.value(msg).contains("mv")) {
             homeData.setDianlinag(msg);//设置电量数据
-        } else if (StringUtils.value(msg).contains("t:") && StringUtils.value(msg).contains("b:")) {
-            //获取步数信息
-            StepInfo stepInfo = new StepInfo(msg);
-            stepInfoList.add(stepInfo);
-            String json = new Gson().toJson(stepInfoList, new TypeToken<List<StepInfo>>() {
-            }.getType());
-            ViseLog.json(json);
-        } else if (StringUtils.value(msg).contains("t:") && StringUtils.value(msg).contains("r:")) {
+            reqBleUseEyeAll();
+        } else if //获取步数信息
+        (StringUtils.value(msg).contains("t:") && StringUtils.value(msg).contains("b:")) {
+            if (currentCommond.equals(COMMAND_ALL_STEP)) {
+                StepInfo stepInfo = new StepInfo(msg);
+                stepInfoList.add(stepInfo);
+                String json = new Gson().toJson(stepInfoList, new TypeToken<List<StepInfo>>() {
+                }.getType());
+                //todo  计算健康值
+            }
+        } else if //获取久坐数据
+        (StringUtils.value(msg).contains("l:") && StringUtils.value(msg).startsWith("l:")) {
+            if (currentCommond.equals(COMMAND_LONG_TIME_SEAT)) {
+                long time = Long.valueOf(msg.replaceAll("l:", "").trim());
+                longTimeSetList.add(time);
+                //todo  计算健康值
+            }
+        } else if //包含全部用眼数据 和近距离用眼数据
+        (StringUtils.value(msg).contains("t:") && StringUtils.value(msg).contains("r:")) {
             //获取步数信息
             UseEyeInfo useEyeInfo = new UseEyeInfo(msg);
             if (currentCommond.equals(COMMAND_ALL_USE_EYE)) {
-                useEyeInfoList.add(useEyeInfo);
-                String json = new Gson().toJson(useEyeInfoList, new TypeToken<List<UseEyeInfo>>() {
+                useEyeAllList.add(useEyeInfo);
+                String json = new Gson().toJson(useEyeAllList, new TypeToken<List<UseEyeInfo>>() {
                 }.getType());
-                ViseLog.json(json);
-            } else if (currentCommond.equals(COMMAND_ALL_STEP)) {
-                useEyeInfoList.add(useEyeInfo);
-                String json = new Gson().toJson(useEyeInfoList, new TypeToken<List<UseEyeInfo>>() {
-                }.getType());
-                ViseLog.json(json);
+                //todo 全部用眼数据
             } else if (currentCommond.equals(COMMAND_NEAR_USE_EYE)) {
-                useEyeInfoList.add(useEyeInfo);
-                String json = new Gson().toJson(useEyeInfoList, new TypeToken<List<UseEyeInfo>>() {
+                useEyeNearList.add(useEyeInfo);
+                String json = new Gson().toJson(useEyeAllList, new TypeToken<List<UseEyeInfo>>() {
                 }.getType());
-                ViseLog.json(json);
+                //todo 近距离用眼数据
             }
+        } else if (StringUtils.value(msg).contains("v:") && StringUtils.value(msg).contains("mv")) {
+            switch (currentCommond) {
+                case COMMAND_ALL_USE_EYE:
+                    reqBleFootStep();
+                    break;
+                case COMMAND_ALL_STEP:
+                    reqBleUseEyeEyeNear();
+                    break;
+                case COMMAND_NEAR_USE_EYE:
+                    reqBleLongTimeSeat();
+                    break;
+                case COMMAND_LONG_TIME_SEAT:
+                    loading("同步数据中");
+                    String allUseEyeJson = new Gson().toJson(useEyeAllList, new TypeToken<List<UseEyeInfo>>() {
+                    }.getType());
+                    String nearUseEyeJson = new Gson().toJson(useEyeNearList, new TypeToken<List<UseEyeInfo>>() {
+                    }.getType());
+                    String stepInfoJson = new Gson().toJson(stepInfoList, new TypeToken<List<SeatInfo>>() {
+                    }.getType());
+                    String longTimeSeatJson = longTimeSetList.toString();
+
+
+                    Logger.e("全部用眼信息  :", allUseEyeJson);
+                    Logger.e("近距离用眼信息  :", nearUseEyeJson);
+                    Logger.e("步数信息  :", stepInfoJson);
+                    Logger.e("久坐信息  :", longTimeSeatJson);
+                    SaveShData shData = new SaveShData();
+                    shData.setUserMobile(readMobile());
+                    shData.setValue(readMobile());
+                    shData.setType("2");
+                    shData.setCreateTime(DateUtil.dateToStr(new Date()));
+                    shData.setValue(allUseEyeJson);
+                    String toJson = new Gson().toJson(shData);
+                    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), toJson);
+                    OkGo.<String>post(BleApi.getUrl(BleApi.saveShaData)).upRequestBody(requestBody).headers(new HttpHeaders("token", readToken())).tag(this).execute(new MineStringCallback() {
+                        @Override public void success(String result) {
+                            dissmiss();
+                            ResultMsg bean = new Gson().fromJson(result, ResultMsg.class);
+                            if (bean.isSuccess()) {
+                                showCenterInfoMsg("提交成功");
+                            } else {
+                                showCenterInfoMsg("提交失败");
+                            }
+                        }
+
+                        @Override public void onError(Response<String> response) {
+                            super.onError(response);
+                            dissmiss();
+                        }
+                    });
+                    break;
+                default:
+                    dissmiss();
+                    break;
+
+
+            }
+
         }
     }
 

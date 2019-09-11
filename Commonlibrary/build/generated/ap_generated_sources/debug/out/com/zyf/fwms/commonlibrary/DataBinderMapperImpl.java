@@ -3,14 +3,11 @@ package com.zyf.fwms.commonlibrary;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.View;
+
 import androidx.databinding.DataBinderMapper;
 import androidx.databinding.DataBindingComponent;
 import androidx.databinding.ViewDataBinding;
-import java.lang.Integer;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.RuntimeException;
-import java.lang.String;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
