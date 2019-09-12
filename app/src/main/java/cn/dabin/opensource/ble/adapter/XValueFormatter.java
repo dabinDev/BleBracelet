@@ -23,11 +23,11 @@ public class XValueFormatter extends ValueFormatter {
     @Override public String getFormattedValue(float value) {
         //LogUtils.e(value+"");
         int values = (int) value;
-        if(values<0){
+        if (values < 0) {
             values = 0;
         }
-        if(values>=list.size()){
-            values = list.size()-1;
+        if (values >= list.size()) {
+            values = list.size() - 1;
         }
         return list.get(values%list.size());
     }

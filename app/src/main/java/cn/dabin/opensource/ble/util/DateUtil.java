@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -240,7 +241,7 @@ public class DateUtil {
         String hour = "00";
         String minute = "00";
         String second = "00";
-        if (value != null && !value.trim().equals("")) {
+        if (value != null && !"".equals(value.trim())) {
             int v_int = Integer.valueOf(value);
             hour = v_int / 3600 + "";//获得小时;
             minute = v_int % 3600 / 60 + "";//获得小时;
@@ -296,15 +297,16 @@ public class DateUtil {
         String[] jj = null;
         kk = st1.split(":");
         jj = st2.split(":");
-        if (Integer.parseInt(kk[0]) < Integer.parseInt(jj[0]))
+        if (Integer.parseInt(kk[0]) < Integer.parseInt(jj[0])) {
             return "0";
-        else {
+        } else {
             double y = Double.parseDouble(kk[0]) + Double.parseDouble(kk[1]) / 60;
             double u = Double.parseDouble(jj[0]) + Double.parseDouble(jj[1]) / 60;
-            if ((y - u) > 0)
+            if ((y - u) > 0) {
                 return y - u + "";
-            else
+            } else {
                 return "0";
+            }
         }
     }
 
@@ -387,12 +389,13 @@ public class DateUtil {
         GregorianCalendar gc = (GregorianCalendar) Calendar.getInstance();
         gc.setTime(d);
         int year = gc.get(Calendar.YEAR);
-        if ((year % 400) == 0)
+        if ((year % 400) == 0) {
             return true;
-        else if ((year % 4) == 0) {
+        } else if ((year % 4) == 0) {
             return (year % 100) != 0;
-        } else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -465,8 +468,9 @@ public class DateUtil {
     public static String getSeqWeek() {
         Calendar c = Calendar.getInstance(Locale.CHINA);
         String week = Integer.toString(c.get(Calendar.WEEK_OF_YEAR));
-        if (week.length() == 1)
+        if (week.length() == 1) {
             week = "0" + week;
+        }
         String year = Integer.toString(c.get(Calendar.YEAR));
         return year + week;
     }
@@ -483,20 +487,41 @@ public class DateUtil {
         Date dd = DateUtil.strToDate(sdate);
         Calendar c = Calendar.getInstance();
         c.setTime(dd);
-        if (num.equals("1")) // 返回星期一所在的日期
-            c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        else if (num.equals("2")) // 返回星期二所在的日期
-            c.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
-        else if (num.equals("3")) // 返回星期三所在的日期
-            c.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
-        else if (num.equals("4")) // 返回星期四所在的日期
-            c.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
-        else if (num.equals("5")) // 返回星期五所在的日期
-            c.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
-        else if (num.equals("6")) // 返回星期六所在的日期
-            c.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
-        else if (num.equals("0")) // 返回星期日所在的日期
-            c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        switch (num) {
+            case "1":
+// 返回星期一所在的日期
+                c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                break;
+            case "2":
+// 返回星期二所在的日期
+
+                c.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
+                break;
+            case "3":
+// 返回星期三所在的日期
+
+                c.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+                break;
+            case "4":
+// 返回星期四所在的日期
+
+                c.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+                break;
+            case "5":
+// 返回星期五所在的日期
+                c.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+                break;
+            case "6":
+// 返回星期六所在的日期
+                c.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                break;
+            case "0":
+// 返回星期日所在的日期
+                c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                break;
+            default:
+                break;
+        }
         return new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
     }
 
@@ -546,10 +571,12 @@ public class DateUtil {
      * @return
      */
     public static long getDays(String date1, String date2) {
-        if (date1 == null || date1.equals(""))
+        if (date1 == null || date1.equals("")) {
             return 0;
-        if (date2 == null || date2.equals(""))
+        }
+        if (date2 == null || date2.equals("")) {
             return 0;
+        }
         // 转换为标准时间
         java.util.Date date = null;
         java.util.Date mydate = null;
@@ -602,8 +629,9 @@ public class DateUtil {
     public static String getRandom(int i) {
         Random jjj = new Random();
         // int suiJiShu = jjj.nextInt(9);
-        if (i == 0)
+        if (i == 0) {
             return "";
+        }
         String jj = "";
         for (int k = 0; k < i; k++) {
             jj = jj + jjj.nextInt(9);
@@ -614,8 +642,9 @@ public class DateUtil {
     public static boolean RightDate(String date) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        if (date == null)
+        if (date == null) {
             return false;
+        }
         if (date.length() > 10) {
             sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         } else {
@@ -646,32 +675,49 @@ public class DateUtil {
             if (nd.equals("1")) {
                 sreturn = s_nd;
                 // 处理间隔符
-                if (format.equals("1"))
-                    sreturn = sreturn + "年";
-                else if (format.equals("2"))
-                    sreturn = sreturn + "-";
-                else if (format.equals("3"))
-                    sreturn = sreturn + "/";
-                else if (format.equals("5"))
-                    sreturn = sreturn + ".";
+                switch (format) {
+                    case "1":
+                        sreturn = sreturn + "年";
+                        break;
+                    case "2":
+                        sreturn = sreturn + "-";
+                        break;
+                    case "3":
+                        sreturn = sreturn + "/";
+                        break;
+                    case "5":
+                        sreturn = sreturn + ".";
+                        break;
+                    default:
+                        break;
+                }
             }
             // 处理月份
             if (yf.equals("1")) {
                 sreturn = sreturn + s_yf;
-                if (format.equals("1"))
-                    sreturn = sreturn + "月";
-                else if (format.equals("2"))
-                    sreturn = sreturn + "-";
-                else if (format.equals("3"))
-                    sreturn = sreturn + "/";
-                else if (format.equals("5"))
-                    sreturn = sreturn + ".";
+                switch (format) {
+                    case "1":
+                        sreturn = sreturn + "月";
+                        break;
+                    case "2":
+                        sreturn = sreturn + "-";
+                        break;
+                    case "3":
+                        sreturn = sreturn + "/";
+                        break;
+                    case "5":
+                        sreturn = sreturn + ".";
+                        break;
+                    default:
+                        break;
+                }
             }
             // 处理日期
             if (rq.equals("1")) {
                 sreturn = sreturn + s_rq;
-                if (format.equals("1"))
+                if (format.equals("1")) {
                     sreturn = sreturn + "日";
+                }
             }
         } else {
             // 不是空值，也是一个合法的日期值，则先将其转换为标准的时间格式
@@ -682,32 +728,49 @@ public class DateUtil {
             if (nd.equals("1")) {
                 sreturn = s_nd;
                 // 处理间隔符
-                if (format.equals("1"))
-                    sreturn = sreturn + "年";
-                else if (format.equals("2"))
-                    sreturn = sreturn + "-";
-                else if (format.equals("3"))
-                    sreturn = sreturn + "/";
-                else if (format.equals("5"))
-                    sreturn = sreturn + ".";
+                switch (format) {
+                    case "1":
+                        sreturn = sreturn + "年";
+                        break;
+                    case "2":
+                        sreturn = sreturn + "-";
+                        break;
+                    case "3":
+                        sreturn = sreturn + "/";
+                        break;
+                    case "5":
+                        sreturn = sreturn + ".";
+                        break;
+                    default:
+                        break;
+                }
             }
             // 处理月份
             if (yf.equals("1")) {
                 sreturn = sreturn + s_yf;
-                if (format.equals("1"))
-                    sreturn = sreturn + "月";
-                else if (format.equals("2"))
-                    sreturn = sreturn + "-";
-                else if (format.equals("3"))
-                    sreturn = sreturn + "/";
-                else if (format.equals("5"))
-                    sreturn = sreturn + ".";
+                switch (format) {
+                    case "1":
+                        sreturn = sreturn + "月";
+                        break;
+                    case "2":
+                        sreturn = sreturn + "-";
+                        break;
+                    case "3":
+                        sreturn = sreturn + "/";
+                        break;
+                    case "5":
+                        sreturn = sreturn + ".";
+                        break;
+                    default:
+                        break;
+                }
             }
             // 处理日期
             if (rq.equals("1")) {
                 sreturn = sreturn + s_rq;
-                if (format.equals("1"))
+                if (format.equals("1")) {
                     sreturn = sreturn + "日";
+                }
             }
         }
         return sreturn;
@@ -726,10 +789,11 @@ public class DateUtil {
             year = year + 1;
         }
         String smonth = "";
-        if (month < 10)
+        if (month < 10) {
             smonth = "0" + month;
-        else
+        } else {
             smonth = "" + month;
+        }
         return year + "-" + smonth + "-10";
     }
 
@@ -740,8 +804,9 @@ public class DateUtil {
      * @version 2015-3-31 上午09:29:31 <br/>
      */
     public static String getOKDate(String sdate) {
-        if (sdate == null || sdate.equals(""))
+        if (sdate == null || sdate.equals("")) {
             return getStringDateShort();
+        }
 
 //      if (!VeStr.Isdate(sdate)) {
 //       sdate = getStringDateShort();
@@ -749,8 +814,9 @@ public class DateUtil {
 //      // 将“/”转换为“-”
 //      sdate = VeStr.Replace(sdate, "/", "-");
         // 如果只有8位长度，则要进行转换
-        if (sdate.length() == 8)
+        if (sdate.length() == 8) {
             sdate = sdate.substring(0, 4) + "-" + sdate.substring(4, 6) + "-" + sdate.substring(6, 8);
+        }
         ParsePosition pos = new ParsePosition(0);
         Date strtodate = formatter.parse(sdate, pos);
         String dateString = formatter.format(strtodate);
@@ -898,6 +964,32 @@ public class DateUtil {
         newCalendar.set(Calendar.SECOND, second);
         newCalendar.set(Calendar.MILLISECOND, millisecond);
         return newCalendar.getTimeInMillis() / 1000;
+    }
+
+
+    public static ArrayList<String> getDayByMonth(Date date, String regx) {
+        ArrayList<String> dayList = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance(Locale.CHINA);
+        calendar.setTime(date);
+        int year = calendar.get(Calendar.YEAR);//年份
+        int month = calendar.get(Calendar.MONTH) + 1;//月份
+        int day = calendar.getActualMaximum(Calendar.DATE);
+        for (int i = 1; i <= day; i++) {
+            Calendar tempCalendar = Calendar.getInstance(Locale.CHINA);
+            if (month < 10 && i < 10) {
+                tempCalendar.set(Calendar.YEAR, year);//年份
+                tempCalendar.set(Calendar.MONTH, month - 1);//月份
+                tempCalendar.set(Calendar.DATE, i);
+            }
+            String aDate = "";
+            if (StringUtils.isEmpty(regx)) {
+                aDate = new SimpleDateFormat("yyyy-MM-dd").format(tempCalendar.getTime());
+            } else {
+                aDate = new SimpleDateFormat(regx).format(tempCalendar.getTime());
+            }
+            dayList.add(aDate);
+        }
+        return dayList;
     }
 
 

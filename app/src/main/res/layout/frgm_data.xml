@@ -5,11 +5,13 @@
     android:weightSum="2"
     android:background="@color/colorWhite"
     android:layout_height="match_parent">
+
     <View
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/colorWhite" />
+
     <TextView
         android:id="@+id/tv_tip"
         android:layout_width="match_parent"
@@ -43,20 +45,40 @@
             android:layout_weight="1"
             android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/tv_eye_distance"
+            <LinearLayout
+                android:id="@+id/ll_top1"
                 android:layout_width="match_parent"
-                android:text="用眼距离日对比"
-                android:textColor="@color/colorSecondaryText"
-                android:gravity="center_vertical|start"
-                android:textSize="@dimen/text_size_17"
-                android:layout_height="50dp" />
+                android:layout_height="50dp">
+
+                <TextView
+                    android:id="@+id/tv_eye_distance"
+                    android:layout_width="wrap_content"
+                    android:text="用眼距离日对比"
+                    android:textColor="@color/colorSecondaryText"
+                    android:gravity="center_vertical|start"
+                    android:layout_height="match_parent"
+                    android:textSize="@dimen/text_size_17" />
+
+                <TextView
+                    android:id="@+id/tv_near_use_date"
+                    android:layout_width="wrap_content"
+                    android:text="2019.09"
+                    android:gravity="center_vertical|end"
+                    android:textSize="@dimen/text_size_13"
+                    android:layout_alignParentRight="true"
+                    android:layout_weight="1"
+                    android:drawableEnd="@drawable/tridown_gray"
+                    android:drawablePadding="10dp"
+                    android:textColor="@color/colorSecondaryText"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/chart1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/tv_eye_distance" />
+                android:layout_below="@id/ll_top1" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -64,20 +86,40 @@
             android:layout_weight="1"
             android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/tv_error_time"
+            <LinearLayout
+                android:id="@+id/ll_top2"
                 android:layout_width="match_parent"
-                android:text="错误用眼占用时间比"
-                android:textColor="@color/colorSecondaryText"
-                android:gravity="center_vertical|start"
-                android:textSize="@dimen/text_size_17"
-                android:layout_height="50dp" />
+                android:layout_height="50dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="错误用眼占时间占比"
+                    android:textColor="@color/colorSecondaryText"
+                    android:gravity="center_vertical|start"
+                    android:layout_height="match_parent"
+                    android:textSize="@dimen/text_size_17" />
+
+                <TextView
+                    android:id="@+id/tv_error_use_date"
+                    android:layout_width="wrap_content"
+                    android:text="2019.09"
+                    android:gravity="center_vertical|end"
+                    android:textSize="@dimen/text_size_13"
+                    android:layout_alignParentRight="true"
+                    android:layout_weight="1"
+                    android:drawableEnd="@drawable/tridown_gray"
+                    android:drawablePadding="10dp"
+                    android:textColor="@color/colorSecondaryText"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/chart2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/tv_error_time" />
+                android:layout_below="@id/ll_top2" />
+
         </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>

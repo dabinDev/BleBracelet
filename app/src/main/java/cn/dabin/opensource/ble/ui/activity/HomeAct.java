@@ -348,9 +348,9 @@ public class HomeAct extends BaseActivity {
 
         @Override
         public void onDeviceFound(final BluetoothLeDevice bluetoothLeDevice) {
-            loading("连接蓝牙中");
             ViseLog.e("Founded Scan Device:" + bluetoothLeDevice);
             if (bluetoothLeDevice != null && bluetoothLeDevice.getName() != null && bluetoothLeDevice.getName().equals("MB0002")) {
+                loading("连接蓝牙中");
                 stopScan();
                 currentDevice = bluetoothLeDevice;
                 BluetoothDeviceManager.getInstance().connect(bluetoothLeDevice);
@@ -360,6 +360,9 @@ public class HomeAct extends BaseActivity {
         @Override
         public void onScanFinish(BluetoothLeDeviceStore bluetoothLeDeviceStore) {
             ViseLog.e("scan finish " + bluetoothLeDeviceStore);
+            //todo 正式则需要去掉
+            stopScan();
+            dissmiss();
         }
 
         @Override

@@ -116,7 +116,7 @@ public class MeFrgm extends BaseFragment implements View.OnClickListener {
         OkGo.<String>get(BleApi.getUrl(BleApi.getLoginUser)).params(params).tag(this).execute(new MineStringCallback() {
             @Override public void success(String result) {
                 BabyInfoBean bean = new Gson().fromJson(result, BabyInfoBean.class);
-                if (bean.getSuccess()) {
+                if (bean.getSuccess() && bean.getModel() != null) {
                     tvNickname.setText(StringUtils.value(bean.getModel().getUsername()));
                     if (StringUtils.isNotEmpty(bean.getModel().getPhoto())) {
                         Glide.with(getContext()).load(bean.getModel().getPhoto()).apply(GlideUtil.$().getOption()).into(ivHead);

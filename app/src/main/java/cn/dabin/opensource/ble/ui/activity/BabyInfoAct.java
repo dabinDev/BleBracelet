@@ -169,7 +169,7 @@ public class BabyInfoAct extends BaseActivity implements View.OnClickListener, P
         OkGo.<String>get(BleApi.getUrl(BleApi.getLoginUser)).params(params).tag(this).execute(new MineStringCallback() {
             @Override public void success(String result) {
                 BabyInfoBean bean = new Gson().fromJson(result, BabyInfoBean.class);
-                if (bean.getSuccess()) {
+                if (bean.getSuccess() && bean.getModel() != null) {
                     tvMaibaoNumValue.setText(StringUtils.value(bean.getModel().getUsername()));
                     if (StringUtils.isNotEmpty(bean.getModel().getPhoto())) {
                         Glide.with(mContext).load(bean.getModel().getPhoto()).apply(GlideUtil.$().getOption()).into(ivHederIcon);
