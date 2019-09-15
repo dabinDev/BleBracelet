@@ -1,73 +1,73 @@
 -- Merging decision tree log ---
 manifest
-ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
-INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
-INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
-INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
-INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
-INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
-INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
+ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
+INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
+INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
+INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
+INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
+INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
+INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
 	package
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:3:5-44
-		INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
-		INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:3:5-44
+		INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+		INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
 	android:versionName
-		INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
-		INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+		INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
+		INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
 	android:versionCode
-		INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
-		INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+		INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:1-30:12
+		INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
 	xmlns:android
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:11-69
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:2:11-69
 uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
-ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:5:5-81
+ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:5:5-81
 	android:name
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:5:22-78
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:5:22-78
 application
-ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:7:5-28:19
+ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:7:5-28:19
 	android:label
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:9:9-41
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:9:9-41
 	android:allowBackup
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:8:9-35
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:8:9-35
 activity#com.darsh.multipleimageselect.activities.AlbumSelectActivity
-ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:10:9-18:20
+ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:10:9-18:20
 	android:label
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:13:13-45
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:13:13-45
 	android:configChanges
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:12:13-59
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:12:13-59
 	android:theme
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:14:13-60
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:14:13-60
 	android:name
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:11:13-59
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:11:13-59
 intent-filter#category:name:android.intent.category.DEFAULT
-ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:15:13-17:29
+ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:15:13-17:29
 category#android.intent.category.DEFAULT
-ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:16:17-76
+ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:16:17-76
 	android:name
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:16:27-73
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:16:27-73
 activity#com.darsh.multipleimageselect.activities.ImageSelectActivity
-ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:19:9-27:20
+ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:19:9-27:20
 	android:label
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:22:13-45
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:22:13-45
 	android:configChanges
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:21:13-59
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:21:13-59
 	android:theme
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:23:13-60
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:23:13-60
 	android:name
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:20:13-59
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:20:13-59
 uses-sdk
-INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
-INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
-INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
-INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
 	android:targetSdkVersion
-		INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
-		INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+		INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+		INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
-		ADDED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
-		INJECTED from F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+		INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+		ADDED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+		INJECTED from F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml

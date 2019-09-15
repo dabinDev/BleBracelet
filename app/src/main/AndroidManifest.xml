@@ -37,7 +37,7 @@
 
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -216,7 +216,7 @@
                 <action android:name="cn.jiguang.user.service.action" />
             </intent-filter>
         </service>
-        <service android:name=".service.DfuService" />
+        <service android:name=".service.DfuService"  android:exported="true" />
 
         <!-- Required  . Enable it you can get statistics data with channel -->
         <meta-data

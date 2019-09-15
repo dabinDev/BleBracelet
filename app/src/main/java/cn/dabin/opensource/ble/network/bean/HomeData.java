@@ -15,15 +15,15 @@ public class HomeData {
     @Expose
     private String jinjuliyanshichang;
     @Expose
-    private String jiuzuo;
+    private String jiuzuo; //久坐数据
     @Expose
-    private String step;
+    private String step; //步数信息
     @Expose
-    private String tongbuTime;
+    private String tongbuTime;//同步时间
     @Expose
-    private String yigongfenzhong;
+    private String yigongfenzhong; //全部时间
     @Expose
-    private String yongyanpingjinjuli;
+    private String yongyanpingjinjuli;//用眼平均距离
     @Expose
     private String zhi;
     @Expose

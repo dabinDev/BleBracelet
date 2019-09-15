@@ -40,6 +40,11 @@ public class BluetoothDeviceManager {
     private CallbackDataEvent callbackDataEvent = new CallbackDataEvent();
     private NotifyDataEvent notifyDataEvent = new NotifyDataEvent();
 
+
+    public DeviceMirror getDeviceMirror(BluetoothLeDevice bluetoothLeDevice) {
+        return mDeviceMirrorPool.getDeviceMirror(bluetoothLeDevice);
+    }
+
     /**
      * 连接回调
      */

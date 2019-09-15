@@ -2,11 +2,14 @@ package cn.dabin.opensource.ble.ui.fragment;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.core.widget.TextViewCompat;
 
 import com.bigkoo.pickerview.TimePickerView;
 import com.google.gson.Gson;
@@ -16,6 +19,7 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.HttpHeaders;
 import com.lzy.okgo.model.HttpParams;
 import com.lzy.okgo.model.Response;
+import com.lzy.okgo.utils.OkLogger;
 import com.vise.xsnow.event.BusManager;
 
 import org.json.JSONArray;
@@ -30,9 +34,7 @@ import java.util.List;
 
 import cn.dabin.opensource.ble.R;
 import cn.dabin.opensource.ble.base.BaseFragment;
-import cn.dabin.opensource.ble.global.BleApplication;
 import cn.dabin.opensource.ble.network.BleApi;
-import cn.dabin.opensource.ble.network.bean.BleInfo;
 import cn.dabin.opensource.ble.network.bean.HomeData;
 import cn.dabin.opensource.ble.network.bean.ResultMsg;
 import cn.dabin.opensource.ble.network.bean.SaveShData;
@@ -41,6 +43,7 @@ import cn.dabin.opensource.ble.network.bean.StepInfo;
 import cn.dabin.opensource.ble.network.bean.UseEyeInfo;
 import cn.dabin.opensource.ble.network.callback.MineStringCallback;
 import cn.dabin.opensource.ble.ui.activity.HomeAct;
+import cn.dabin.opensource.ble.util.CollectionUtil;
 import cn.dabin.opensource.ble.util.DateUtil;
 import cn.dabin.opensource.ble.util.Logger;
 import cn.dabin.opensource.ble.util.StringUtils;
@@ -57,13 +60,14 @@ import okhttp3.RequestBody;
  * Class description:
  */
 public class HomeFrgm extends BaseFragment implements View.OnClickListener, HomeAct.BleCallBack, TimePickerView.OnTimeSelectListener {
+    private final String COMMAND_SET_TIME = "st";//设置时间
     private final String COMMAND_BATTERY_INFO = "v";//电量信息
     private final String COMMAND_ALL_USE_EYE = "a";//全部用眼信息数据
     private final String COMMAND_ALL_STEP = "e";//全部步数
     private final String COMMAND_NEAR_USE_EYE = "f";//近距离用眼数据
     private final String COMMAND_LONG_TIME_SEAT = "l";//久坐数据
     //private final String COMMAND_TIME = "t";//时间
-
+    private final String TAG = HomeFrgm.this.getClass().getName();
     private LinearLayout llTop1;
     private ImageView tvToLast;
     private TextView tvHomeTime;
@@ -84,14 +88,13 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
     private TextView tvHeart;
     private TimePickerView pvTime;
     private String currentCommond = "";
-    private final String TAG = HomeFrgm.this.getClass().getName();
     private List<StepInfo> stepInfoList = new ArrayList<>();
     //全部用眼信息
     private List<UseEyeInfo> useEyeAllList = new ArrayList<>();
     //近距离用眼数据
     private List<UseEyeInfo> useEyeNearList = new ArrayList<>();
     //久坐数据
-    private List<Long> longTimeSetList = new ArrayList<>();
+    private List<Long> longTimeSeatList = new ArrayList<>();
 
     private Date currentDate;
     private HomeData homeData;
@@ -114,12 +117,19 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
                     .navigationBarEnable(false)
                     .init();
             ((HomeAct) getActivity()).setCallBack(this);
-            currentDate = new Date();
-            switchDate(currentDate);
-
         }
     }
 
+
+    //**获取当前电量
+    private void setBleTime() {
+        loading("设置时间信息");
+        currentCommond = COMMAND_SET_TIME;
+        new Handler().postDelayed(() -> {
+            ((HomeAct) getActivity()).sendMsg(COMMAND_SET_TIME + new Date().getTime());
+        }, 1000);
+
+    }
 
     //**获取当前电量
     private void reqBleBatteryInfo() {
@@ -189,6 +199,8 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
 
     @Override public void onLazyLoad() {
         initView();
+        currentDate = new Date();
+        switchDate(currentDate);
     }
 
     @SuppressLint("StringFormatInvalid") private void initView() {
@@ -211,6 +223,7 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
         tvHomeTime.setOnClickListener(this);
         tvToNext.setOnClickListener(this);
         tvReset.setOnClickListener(this);
+        TextViewCompat.setAutoSizeTextTypeWithDefaults(tvHeart, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
         Calendar endDate = Calendar.getInstance();
         //时间选择器
         pvTime = new TimePickerView.Builder(getContext(), this)
@@ -232,11 +245,6 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
                 .isCenterLabel(true) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
                 .isDialog(false)//是否显示为对话框样式
                 .build();
-        if (StringUtils.isNotEmpty(readMac())) {
-            BleInfo info = BleApplication.getBleInfo(readMac());
-            tvBattery.setText(StringUtils.value("当前电量:" + info.getCurrentBattery() + "%"));
-        }
-
     }
 
 
@@ -245,20 +253,27 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
         BusManager.getBus().unregister(this);
     }
 
-    @Override public void onClick(View v) {
-        switch (v.getId()) {
+    @Override public void onClick(View view) {
+        switch (view.getId()) {
             case R.id.tv_to_last:
                 switchDate(DateUtil.strToDate(DateUtil.getBeforeDay(currentDate)));
                 break;
             case R.id.tv_home_time:
-                pvTime.show();
+                if (view.getTag() != null) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime((Date) view.getTag());
+                    pvTime.setDate(calendar);
+                    pvTime.show(view);
+                } else {
+                    pvTime.show(view);
+                }
                 break;
             case R.id.tv_to_next:
                 switchDate(DateUtil.strToDate(DateUtil.getAfterDay(currentDate)));
                 break;
             case R.id.tv_reset:
                 homeData = new HomeData();//用于存储今日数据
-                reqBleBatteryInfo();
+                setBleTime();
                 break;
             default:
                 break;
@@ -274,8 +289,9 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
         loading("加载中");
         //设置顶部当前今日时间
         String time = new SimpleDateFormat("MM月dd日").format(date);
-        tvHomeTime.setText(time);
         currentDate = date;
+        tvHomeTime.setTag(currentDate);
+        tvHomeTime.setText(time);
         HttpParams params1 = new HttpParams();
         params1.put("userMobile", readMobile());
         params1.put("date", DateUtil.getStringDateShort(currentDate));
@@ -305,7 +321,7 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
 
                             setHealthByStep(step);
                             setBatteryInfo(dianlinag);
-                            setLastUploadTime(tongbuTime);
+                            setLastUploadTime(System.currentTimeMillis());
                             //用眼总时长
                             tvTotalUse.setText(StringUtils.valueWithZero(yigongfenzhong));
                             //错误用眼时长
@@ -340,7 +356,9 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
 
     @Override public void receivedData(String received) {
         String msg = received.toLowerCase();
-        if (COMMAND_BATTERY_INFO.equals(currentCommond) && StringUtils.value(msg).contains("v:") && StringUtils.value(msg).contains("mv")) {
+        if (currentCommond.equals(COMMAND_SET_TIME) && StringUtils.value(msg).contains("time")) {
+            reqBleBatteryInfo();
+        } else if (COMMAND_BATTERY_INFO.equals(currentCommond) && StringUtils.value(msg).contains("v:") && StringUtils.value(msg).contains("mv")) {
             homeData.setDianlinag(msg);//设置电量数据
             reqBleUseEyeAll();
         } else if //获取步数信息
@@ -348,6 +366,7 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
             if (currentCommond.equals(COMMAND_ALL_STEP)) {
                 StepInfo stepInfo = new StepInfo(msg);
                 stepInfoList.add(stepInfo);
+
                 String json = new Gson().toJson(stepInfoList, new TypeToken<List<StepInfo>>() {
                 }.getType());
                 //todo  计算健康值
@@ -356,7 +375,8 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
         (StringUtils.value(msg).contains("l:") && StringUtils.value(msg).startsWith("l:")) {
             if (currentCommond.equals(COMMAND_LONG_TIME_SEAT)) {
                 long time = Long.valueOf(msg.replaceAll("l:", "").trim());
-                longTimeSetList.add(time);
+                time = DateUtil.removeSecond(time);
+                longTimeSeatList.add(time);
                 //todo  计算健康值
             }
         } else if //包含全部用眼数据 和近距离用眼数据
@@ -393,37 +413,48 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
                     }.getType());
                     String stepInfoJson = new Gson().toJson(stepInfoList, new TypeToken<List<SeatInfo>>() {
                     }.getType());
-                    String longTimeSeatJson = longTimeSetList.toString();
-
-
+                    String longTimeSeatJson = longTimeSeatList.toString();
                     Logger.e("全部用眼信息  :", allUseEyeJson);
                     Logger.e("近距离用眼信息  :", nearUseEyeJson);
                     Logger.e("步数信息  :", stepInfoJson);
                     Logger.e("久坐信息  :", longTimeSeatJson);
-                    SaveShData shData = new SaveShData();
-                    shData.setUserMobile(readMobile());
-                    shData.setValue(readMobile());
-                    shData.setType("2");
-                    shData.setCreateTime(DateUtil.dateToStr(new Date()));
-                    shData.setValue(allUseEyeJson);
-                    String toJson = new Gson().toJson(shData);
-                    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), toJson);
-                    OkGo.<String>post(BleApi.getUrl(BleApi.saveShaData)).upRequestBody(requestBody).headers(new HttpHeaders("token", readToken())).tag(this).execute(new MineStringCallback() {
-                        @Override public void success(String result) {
-                            dissmiss();
-                            ResultMsg bean = new Gson().fromJson(result, ResultMsg.class);
-                            if (bean.isSuccess()) {
-                                showCenterInfoMsg("提交成功");
-                            } else {
-                                showCenterInfoMsg("提交失败");
-                            }
+                    int totalStep = 0;
+                    for (int i = 0; i < CollectionUtil.getCount(stepInfoList); i++) {
+                        totalStep += stepInfoList.get(i).getStep();
+                    }
+                    homeData.setJinjuliyanshichang(StringUtils.value(CollectionUtil.getCount(useEyeNearList)));
+                    homeData.setStep(StringUtils.value(totalStep));
+                    homeData.setYigongfenzhong(StringUtils.value(CollectionUtil.getCount(useEyeAllList)));
+                    homeData.setJiuzuo(StringUtils.value(CollectionUtil.getCount(longTimeSeatList)));
+                    homeData.setCuowuyongyanshichang(StringUtils.value(CollectionUtil.getCount(longTimeSeatList) + CollectionUtil.getCount(longTimeSeatList)));
+                    homeData.setBaifenbi(StringUtils.value(CollectionUtil.isEmpty(useEyeNearList) ? "0" : CollectionUtil.getCount(useEyeNearList) / CollectionUtil.getCount(useEyeAllList)));
+                    homeData.setTongbuTime(DateUtil.getStringDateShort());
+                    int pingjun = 0;
+                    int yongyanshijan = 0;
+                    List<UseEyeInfo> todayDateList = new ArrayList<>();
+                    for (int i = 0; i < CollectionUtil.getCount(useEyeAllList); i++) {
+                        UseEyeInfo tempUseEye = useEyeAllList.get(i);
+                        Date dateNow = new Date();
+                        dateNow.setTime(tempUseEye.getTime());
+                        if (DateUtil.getStringDateShort(dateNow).equals(DateUtil.getStringDateShort(new Date()))) {
+                            yongyanshijan += tempUseEye.getNum();
+                            todayDateList.add(tempUseEye);
                         }
-
-                        @Override public void onError(Response<String> response) {
-                            super.onError(response);
-                            dissmiss();
-                        }
-                    });
+                    }
+                    pingjun = yongyanshijan == 0 ? 0 : yongyanshijan / CollectionUtil.getCount(todayDateList);
+                    homeData.setYongyanpingjinjuli(StringUtils.value(pingjun));
+                    String zhi = "";
+                    if (8000 > totalStep) {
+                        zhi = "不合格";
+                    } else if (10000 > totalStep) {
+                        zhi = "良好";
+                    } else {
+                        zhi = "优";
+                    }
+                    homeData.setZhi(zhi);
+                    String homeJson = new Gson().toJson(homeData);
+                    saveHomeData(1, homeJson);
+                    saveHomeData(2, allUseEyeJson);
                     break;
                 default:
                     dissmiss();
@@ -435,23 +466,74 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
         }
     }
 
+    private void saveHomeData(int type, String json) {
+        loading("提交数据中");
+        SaveShData shData = new SaveShData();
+        shData.setUserMobile(readMobile());
+        if (type == 1) {
+            shData.setType("1");
+            shData.setValue(json);
+        } else {
+            shData.setType("2");
+            shData.setValue(json);
+        }
+        shData.setCreateTime(DateUtil.dateToStr(new Date()));
+        String toJson = new Gson().toJson(shData);
+        OkLogger.d("RequestBody--------------------------------------" + toJson);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), toJson);
+        OkGo.<String>post(BleApi.getUrl(BleApi.saveShaData)).upRequestBody(requestBody).headers(new HttpHeaders("token", readToken())).tag(this).execute(new MineStringCallback() {
+            @Override public void success(String result) {
+                dissmiss();
+                ResultMsg bean = new Gson().fromJson(result, ResultMsg.class);
+                if (bean.isSuccess()) {
+                    showCenterInfoMsg("提交成功");
+                    switchDate(new Date());
+                } else {
+                    showCenterInfoMsg("提交失败");
+                }
+                if (type == 2) {
+                    switchDate(new Date());
+                }
+            }
+
+            @Override public void onError(Response<String> response) {
+                super.onError(response);
+                dissmiss();
+                if (type == 2) {
+                    switchDate(new Date());
+                }
+            }
+        });
+    }
+
+
     private void setLastUploadTime(long timeStmp) {
         String time = new SimpleDateFormat("MM月dd日 HH:mm").format(DateUtil.removeSecond(timeStmp));
         tvLastResetTime.setText(StringUtils.value("上次同步时间:" + time));
     }
 
     private void setHealthByStep(int step) {
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        float value = dm.scaledDensity;
         if (8000 > step) {
-            tvHeart.setTextSize(13);
             tvHeart.setText("不合格");
+            tvHeart.setEms(3);
+            tvHeart.invalidate();
         } else if (step > 8000 && 10000 > step) {
-            tvHeart.setTextSize(15);
             tvHeart.setText("良好");
+            TextViewCompat.setAutoSizeTextTypeWithDefaults(tvHeart, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+            tvHeart.setEms(2);
+            tvHeart.invalidate();
         } else if (step >= 10000) {
-            tvHeart.setTextSize(20);
             tvHeart.setText("优");
+            TextViewCompat.setAutoSizeTextTypeWithDefaults(tvHeart, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+            tvHeart.setEms(1);
+            tvHeart.invalidate();
         } else {
             tvHeart.setText("");
+            // 参数： TextView textView, int autoSizeTextType
+            TextViewCompat.setAutoSizeTextTypeWithDefaults(tvHeart, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+            tvHeart.invalidate();
         }
 
     }
@@ -476,4 +558,8 @@ public class HomeFrgm extends BaseFragment implements View.OnClickListener, Home
 
     }
 
+    @Override public void onPause() {
+        super.onPause();
+        ((HomeAct) getActivity()).setCallBack(null);
+    }
 }

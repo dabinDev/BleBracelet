@@ -16,7 +16,6 @@ import org.litepal.LitePal;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import cn.dabin.opensource.ble.network.bean.BleInfo;
 import cn.jpush.android.api.JPushInterface;
 import okhttp3.OkHttpClient;
 
@@ -51,9 +50,7 @@ public class BleApplication extends Application {
 
 
 
-    public static BleInfo getBleInfo(String macAddress) {
-        return LitePal.where("macAddress=?", macAddress).findFirst(BleInfo.class);
-    }
+
 
 
     private void initOkGo() {

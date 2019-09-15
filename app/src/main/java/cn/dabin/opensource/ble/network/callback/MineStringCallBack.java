@@ -44,6 +44,13 @@ public abstract class MineStringCallback extends AbsCallback<String> {
         OkLogger.d("onStart----------------end-------------------");
 
 
+        if (request.getRequest() != null && request.getRequest().body() != null) {
+            OkLogger.d("onStart--------------------------------------");
+            String reqBody = request.getRequest().body().toString();
+            OkLogger.d("request body-----------  " + reqBody);
+            OkLogger.d("onStart----------------end-------------------");
+        }
+
     }
 
     @Override public void onSuccess(com.lzy.okgo.model.Response<String> response) {

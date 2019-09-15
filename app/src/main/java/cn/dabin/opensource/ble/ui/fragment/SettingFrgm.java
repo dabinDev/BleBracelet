@@ -10,8 +10,6 @@ import com.gyf.immersionbar.ImmersionBar;
 
 import cn.dabin.opensource.ble.R;
 import cn.dabin.opensource.ble.base.BaseFragment;
-import cn.dabin.opensource.ble.global.BleApplication;
-import cn.dabin.opensource.ble.network.bean.BleInfo;
 import cn.dabin.opensource.ble.ui.activity.HomeAct;
 import cn.dabin.opensource.ble.util.Logger;
 
@@ -41,7 +39,6 @@ public class SettingFrgm extends BaseFragment implements RadioGroup.OnCheckedCha
     private RadioButton radioTipTimeMiddle;
     private RadioButton radioTipTimeHeigh;
     private Button btnDoSet;
-    private BleInfo info;
     private String currentDistance;
     private String currentTipTime;
     private String currentShock;
@@ -53,7 +50,6 @@ public class SettingFrgm extends BaseFragment implements RadioGroup.OnCheckedCha
 
     @Override public void onLazyLoad() {
         initView();
-        info = BleApplication.getBleInfo(readMac());
     }
 
     @Override public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -121,8 +117,8 @@ public class SettingFrgm extends BaseFragment implements RadioGroup.OnCheckedCha
             currentTipTime = String.valueOf(rg3.getTag());
         }
         new Handler().postDelayed(() -> {
-            ((HomeAct) getActivity()).sendMsg("v");
-            currentCommond = "v";
+            ((HomeAct) getActivity()).sendMsg("sq" + currentDistance);
+            currentCommond = "sq";
         }, 500);
         //设置振动强度：(设定范围0~10)
         //	“sp”+”强度值”    默认值：10
@@ -142,8 +138,10 @@ public class SettingFrgm extends BaseFragment implements RadioGroup.OnCheckedCha
         Logger.e("commond result", msg);
         switch (currentCommond) {
             case "v":
-                if (msg.contains("")) {
-
+                if (msg.contains("ljz set done")) {
+                    Logger.e("commond" + currentCommond, msg);
+                } else {
+                    Logger.e("commond" + currentCommond, "设置失败!");
                 }
                 break;
             case "sp":

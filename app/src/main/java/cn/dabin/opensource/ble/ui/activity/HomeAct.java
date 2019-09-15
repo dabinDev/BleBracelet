@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +21,9 @@ import com.vise.baseble.callback.scan.ScanCallback;
 import com.vise.baseble.common.PropertyType;
 import com.vise.baseble.model.BluetoothLeDevice;
 import com.vise.baseble.model.BluetoothLeDeviceStore;
+import com.vise.baseble.model.resolver.GattAttributeResolver;
 import com.vise.baseble.utils.BleUtil;
+import com.vise.baseble.utils.HexUtil;
 import com.vise.log.ViseLog;
 import com.vise.log.inner.LogcatTree;
 import com.vise.xsnow.event.BusManager;
@@ -32,6 +33,7 @@ import com.yanzhenjie.permission.runtime.Permission;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
 import cn.dabin.opensource.ble.R;
@@ -40,19 +42,22 @@ import cn.dabin.opensource.ble.base.BaseActivity;
 import cn.dabin.opensource.ble.event.CallbackDataEvent;
 import cn.dabin.opensource.ble.event.ConnectEvent;
 import cn.dabin.opensource.ble.event.NotifyDataEvent;
+import cn.dabin.opensource.ble.service.DfuService;
 import cn.dabin.opensource.ble.ui.fragment.DataFagm;
 import cn.dabin.opensource.ble.ui.fragment.GuardianFagm;
 import cn.dabin.opensource.ble.ui.fragment.HomeFrgm;
 import cn.dabin.opensource.ble.ui.fragment.MeFrgm;
 import cn.dabin.opensource.ble.ui.fragment.SettingFrgm;
 import cn.dabin.opensource.ble.util.BluetoothDeviceManager;
-import cn.dabin.opensource.ble.util.Logger;
+import cn.dabin.opensource.ble.util.StringUtils;
 import github.benjamin.bottombar.NavigationController;
 import github.benjamin.bottombar.PageNavigationView;
 import github.benjamin.bottombar.item.BaseTabItem;
 import github.benjamin.bottombar.tabs.SpecialTab;
 import github.benjamin.bottombar.tabs.SpecialTabRound;
 import no.nordicsemi.android.dfu.DfuProgressListener;
+import no.nordicsemi.android.dfu.DfuServiceController;
+import no.nordicsemi.android.dfu.DfuServiceInitiator;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 /**
@@ -65,25 +70,47 @@ import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
  * Class description:
  */
 public class HomeAct extends BaseActivity {
-    private final String defaultNname = "MB0002";
-    private final String dfuNname = "DfuTarg";
-    public static final UUID DFU_SERVICE_UUID = UUID.fromString("8e400001-f315-4f60-9fb8-838830daea50");//空中升级DFU
-    public static final UUID DFU_CHAR_UUID = UUID.fromString("8e400001-f315-4f60-9fb8-838830daea50");//空中升级DFU
+    public static final UUID DFU_CHECK_FOR_UPDATE_SERVICE_UUID = UUID.fromString("8e400001-f315-4f60-9fb8-838830daea50");//空中升级DFU
+    public static final UUID DFU_CHECK_FOR_UPDATE_CHAR_UUID = UUID.fromString("8e400001-f315-4f60-9fb8-838830daea50");//空中升级DFU
+
+    public static final UUID DFU_UPDATEING1_SERVICE_UUID = UUID.fromString("0000fe59-0000-1000-8000-00805f9b34fb");//空中升级DFU
+    public static final UUID DFU_UPDATEING1_CHAR_UUID = UUID.fromString("8ec90002-f315-4f60-9fb8-838830daea50");//空中升级DFU
+    public static final UUID DFU_UPDATEING2_SERVICE_UUID = UUID.fromString("0000fe59-0000-1000-8000-00805f9b34fb");//空中升级DFU
+    public static final UUID DFU_UPDATEING2_CHAR_UUID = UUID.fromString("8ec90001-f315-4f60-9fb8-838830daea50");//空中升级DFU
+
+    public static final UUID SOFT_SERVICE_UUID = UUID.fromString("0000180a-0000-1000-8000-00805f9b34fb");//软件信息
+    public static final UUID SOFT_CHAR_UUID = UUID.fromString("00002a28-0000-1000-8000-00805f9b34fb");//软件信息
 
     public static final UUID TX_SERVICE_UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");//UART TX(BLE发送)
     public static final UUID TX_CHAR_UUID = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");//UART TX(BLE发送)
 
+
     public static final UUID RX_SERVICE_UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");//UART RX(BLE接收)
     public static final UUID RX_CHAR_UUID = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");//UART RX(BLE接收)
 
+
     public static final UUID SYSTEM_SERVICE_UUID = UUID.fromString("0000180a-0000-1000-8000-00805f9b34fb");//System ID (MAC地址)  高版本兼容
     public static final UUID SYSTEM_CHAR_UUID = UUID.fromString("00002a23-0000-1000-8000-00805f9b34fb");//System ID (MAC地址)  高版本兼容
-    private final String TAG = HomeAct.this.getClass().getName();
+
+
     public static final String MESSAGE_RECEIVED_ACTION = "cn.dabin.opensource.ble.MESSAGE_RECEIVED_ACTION";
     public static final String KEY_TITLE = "title";
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_EXTRAS = "extras";
     public static boolean isForeground = false;
+    private final int type_connect_mb0002 = 10001;
+    private final int type_connect_dfu_targ = 10002;
+    private final int type_check_for_update = 10003;
+    private final int type_updateing = 10004;
+    private final String defaultNname = "MB0002";
+    private final String dfuNname = "DfuTarg";
+    private final String TAG = HomeAct.this.getClass().getName();
+    public BleCallBack callBack;
+    DfuServiceInitiator starter;
+    DfuServiceController controller;
+    private int currentType = -1;
+    private String currentVersion = "";
+    private String requireVersion = "2.4a";
     private ViewPager viewPager;
     private BaseTabItem tabsMessage;
     private BaseTabItem tabsContact;
@@ -91,22 +118,109 @@ public class HomeAct extends BaseActivity {
     private BaseTabItem tabsChart;
     private BaseTabItem tabsMine;
     private BluetoothLeDevice currentDevice;
+    private ScanCallback periodScanCallback = new ScanCallback(new IScanCallback() {
+        @Override
+        public void onDeviceFound(final BluetoothLeDevice bluetoothLeDevice) {
+            if (bluetoothLeDevice != null && bluetoothLeDevice.getName() != null) {
+                ViseLog.e("发现蓝牙设备:" + StringUtils.value(bluetoothLeDevice.getName()));
+                if ((bluetoothLeDevice.getName().equals(defaultNname) || bluetoothLeDevice.getName().equals(dfuNname))) {
+                    ViseLog.e("发现可用设备： " + bluetoothLeDevice.getName() + " 当前设备地址： " + bluetoothLeDevice.getAddress());
+                    currentDevice = bluetoothLeDevice;
+                    stopScan();
+                    loading("蓝牙连接中");
+                    BluetoothDeviceManager.getInstance().connect(bluetoothLeDevice);
+                }
+            }
+        }
 
-    public BleCallBack callBack;
+        @Override
+        public void onScanFinish(BluetoothLeDeviceStore bluetoothLeDeviceStore) {
+            ViseLog.e("蓝牙扫描结束");
+            stopScan();
+            dissmiss();
+        }
 
+        @Override
+        public void onScanTimeout() {
+            ViseLog.e("蓝牙扫描超时");
+        }
 
-    public interface BleCallBack {
+    });
+    private final DfuProgressListener mDfuProgressListener = new DfuProgressListener() {
+        @Override
+        public void onDeviceConnecting(String deviceAddress) {
+            ViseLog.e("dfu" + "设备连接中");
+        }
 
-        void receivedData(String msg);
+        @Override
+        public void onDeviceConnected(String deviceAddress) {
+            ViseLog.e("dfu" + "设备已经连接");
+        }
 
-        void disConnected();
+        @Override
+        public void onDfuProcessStarting(String deviceAddress) {
+            ViseLog.e("dfu" + "开始升级");
+        }
 
-    }
+        @Override
+        public void onDfuProcessStarted(String deviceAddress) {
+            ViseLog.e("dfu" + "开始升级");
+        }
 
+        @Override
+        public void onEnablingDfuMode(String deviceAddress) {
+            ViseLog.e("dfu" + "启用DFU升级模式");
+        }
 
-    public void setCallBack(BleCallBack callBack) {
-        this.callBack = callBack;
-    }
+        @Override
+        public void onProgressChanged(String deviceAddress, int percent, float speed, float avgSpeed, int currentPart, int partsTotal) {
+            ViseLog.e("dfu" + "DFU设备升级中  当前进度 " + percent + "%");
+            loading("设备正在升级 " + percent + "%");
+            //显示进度
+        }
+
+        @Override
+        public void onFirmwareValidating(String deviceAddress) {
+            ViseLog.e("dfu" + "DFU设备升级中  onFirmwareValidating ");
+        }
+
+        @Override
+        public void onDeviceDisconnecting(String deviceAddress) {
+            ViseLog.e("dfu" + "DFU设备断开连接中");
+        }
+
+        @Override
+        public void onDeviceDisconnected(String deviceAddress) {
+            ViseLog.e("dfu" + "DFU设备断开连接完成");
+        }
+
+        @Override
+        public void onDfuCompleted(String deviceAddress) {
+            ViseLog.e("dfu" + "DFU设备升级完成");
+            //停止dfu
+            //升级成功，重新连接设备
+            showCenterSuccessMsg("升级成功");
+            dissmiss();
+        }
+
+        @Override
+        public void onDfuAborted(String deviceAddress) {
+            ViseLog.e("dfu" + "DFU设备升级断开");
+            //升级流产，失败
+            showTopWrongMsg("升级失败");
+            dissmiss();
+            startScan();
+        }
+
+        @Override
+        public void onError(String deviceAddress, int error, int errorType, String message) {
+            ViseLog.e("dfu" + "DFU设备升级错误");
+            //失败
+            showTopWrongMsg("升级失败");
+            dissmiss();
+            startScan();
+        }
+    };
 
     public static void openAct(Context context) {
         Intent intent = new Intent();
@@ -114,6 +228,9 @@ public class HomeAct extends BaseActivity {
         context.startActivity(intent);
     }
 
+    public void setCallBack(BleCallBack callBack) {
+        this.callBack = callBack;
+    }
 
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,78 +248,6 @@ public class HomeAct extends BaseActivity {
         BusManager.getBus().register(this);
 
     }
-
-    private final DfuProgressListener mDfuProgressListener = new DfuProgressListener() {
-        @Override
-        public void onDeviceConnecting(String deviceAddress) {
-            Log.i("dfu", "onDeviceConnecting");
-        }
-
-        @Override
-        public void onDeviceConnected(String deviceAddress) {
-            Log.i("dfu", "onDeviceConnected");
-        }
-
-        @Override
-        public void onDfuProcessStarting(String deviceAddress) {
-            Log.i("dfu", "onDfuProcessStarting");
-        }
-
-        @Override
-        public void onDfuProcessStarted(String deviceAddress) {
-            Log.i("dfu", "onDfuProcessStarted");
-        }
-
-        @Override
-        public void onEnablingDfuMode(String deviceAddress) {
-            Log.i("dfu", "onEnablingDfuMode");
-        }
-
-        @Override
-        public void onProgressChanged(String deviceAddress, int percent, float speed, float avgSpeed, int currentPart, int partsTotal) {
-            Log.i("dfu", "onProgressChanged");
-            Log.i("dfu", "onProgressChanged" + percent);
-            //显示进度
-        }
-
-        @Override
-        public void onFirmwareValidating(String deviceAddress) {
-            Log.i("dfu", "onFirmwareValidating");
-        }
-
-        @Override
-        public void onDeviceDisconnecting(String deviceAddress) {
-
-            Log.i("dfu", "onDeviceDisconnecting");
-        }
-
-        @Override
-        public void onDeviceDisconnected(String deviceAddress) {
-            Log.i("dfu", "onDeviceDisconnected");
-
-        }
-
-        @Override
-        public void onDfuCompleted(String deviceAddress) {
-            Log.i("dfu", "onDfuCompleted");
-            //停止dfu
-            //升级成功，重新连接设备
-
-        }
-
-        @Override
-        public void onDfuAborted(String deviceAddress) {
-            Log.i("dfu", "onDfuAborted");
-            //升级流产，失败
-        }
-
-        @Override
-        public void onError(String deviceAddress, int error, int errorType, String message) {
-            Log.i("dfu", "onError");
-            //失败
-        }
-    };
-
 
     private void initBottomBar() {
         PageNavigationView tab = findViewById(R.id.tab);
@@ -223,10 +268,8 @@ public class HomeAct extends BaseActivity {
         viewPager.setOffscreenPageLimit(5);
         //自动适配ViewPager页面切换
         navigationController.setupWithViewPager(viewPager);
-
         viewPager.setCurrentItem(2);
     }
-
 
     /**
      * 正常tab
@@ -253,7 +296,7 @@ public class HomeAct extends BaseActivity {
 
     @Override
     public void onDestroy() {
-        ViseLog.d(TAG, "onDestroy()");
+        ViseLog.d("onDestroy()");
         ViseBle.getInstance().clear();
         BusManager.getBus().unregister(this);
         super.onDestroy();
@@ -261,13 +304,13 @@ public class HomeAct extends BaseActivity {
 
     @Override
     protected void onStop() {
-        ViseLog.d(TAG, "onStop");
+        ViseLog.d("onStop");
         super.onStop();
     }
 
     @Override
     protected void onPause() {
-        ViseLog.d(TAG, "onPause");
+        ViseLog.d("onPause");
         super.onPause();
         isForeground = false;
         stopScan();
@@ -276,7 +319,7 @@ public class HomeAct extends BaseActivity {
 
     @Override
     protected void onRestart() {
-        ViseLog.d(TAG, "onRestart");
+        ViseLog.d("onRestart");
         super.onRestart();
     }
 
@@ -287,9 +330,10 @@ public class HomeAct extends BaseActivity {
         if (currentDevice == null) {
             loading("扫描蓝牙设备中");
             reqPermission(Permission.ACCESS_COARSE_LOCATION);
-        }
-        if (getClass().getName().equals(dfuNname)) {
-            DfuServiceListenerHelper.registerProgressListener(this, mDfuProgressListener);
+        } else {
+            if (StringUtils.value(currentDevice.getName()).equals(dfuNname)) {
+                DfuServiceListenerHelper.registerProgressListener(this, mDfuProgressListener);
+            }
         }
     }
 
@@ -333,7 +377,9 @@ public class HomeAct extends BaseActivity {
                 ViseLog.e("蓝牙未打开");
             }
         }
-        startScan();
+        if (currentDevice == null) {
+            startScan();
+        }
     }
 
     private void startScan() {
@@ -344,71 +390,26 @@ public class HomeAct extends BaseActivity {
         ViseBle.getInstance().stopScan(periodScanCallback);
     }
 
-    private ScanCallback periodScanCallback = new ScanCallback(new IScanCallback() {
 
-        @Override
-        public void onDeviceFound(final BluetoothLeDevice bluetoothLeDevice) {
-            ViseLog.e("Founded Scan Device:" + bluetoothLeDevice);
-            if (bluetoothLeDevice != null && bluetoothLeDevice.getName() != null && bluetoothLeDevice.getName().equals("MB0002")) {
-                loading("连接蓝牙中");
-                stopScan();
-                currentDevice = bluetoothLeDevice;
-                BluetoothDeviceManager.getInstance().connect(bluetoothLeDevice);
-            }
+    private void startUpdate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            DfuServiceInitiator.createDfuNotificationChannel(getApplicationContext());
         }
-
-        @Override
-        public void onScanFinish(BluetoothLeDeviceStore bluetoothLeDeviceStore) {
-            ViseLog.e("scan finish " + bluetoothLeDeviceStore);
-            //todo 正式则需要去掉
-            stopScan();
-            dissmiss();
-        }
-
-        @Override
-        public void onScanTimeout() {
-            ViseLog.e("scan timeout");
-        }
-
-    });
+        starter = new DfuServiceInitiator(currentDevice.getAddress())
+                .setDeviceName(currentDevice.getName())
+                .setKeepBond(true)
+// If you want to have experimental buttonless DFU feature supported call additionally:
+                //starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
+                .setZip(R.raw.update);
+        controller = starter.start(this, DfuService.class);
+    }
 
 
-    @Subscribe
-    public void showConnectedDevice(ConnectEvent event) {
-        if (event != null) {
-            if (event.isSuccess()) {
-                loading("蓝牙连接成功");
-                ViseLog.e("showConnectedDevice -- 连接成功");
-                BluetoothGattService service1 = event.getDeviceMirror().getGattService(TX_SERVICE_UUID);
-                BluetoothGattCharacteristic characteristic1 = service1.getCharacteristic(TX_CHAR_UUID);
-                int charaProp1 = characteristic1.getProperties();
-                ViseLog.e("DeviceControl--- serviceUUid" + service1.getUuid().toString());
-                ViseLog.e("DeviceControl--- characteristicUUid" + characteristic1.getUuid().toString());
-                ViseLog.e("DeviceControl--- charaProp" + charaProp1);
-                initNotice(service1, characteristic1, charaProp1);
-
-
-                BluetoothGattService service2 = event.getDeviceMirror().getGattService(RX_SERVICE_UUID);
-                BluetoothGattCharacteristic characteristic2 = service2.getCharacteristic(RX_CHAR_UUID);
-                int charaProp2 = characteristic2.getProperties();
-                ViseLog.e("DeviceControl--- serviceUUid" + service2.getUuid().toString());
-                ViseLog.e("DeviceControl--- characteristicUUid" + characteristic2.getUuid().toString());
-                ViseLog.e("DeviceControl--- charaProp" + charaProp2);
-                initNotice(service2, characteristic2, charaProp2);
-
-                BluetoothGattService service3 = event.getDeviceMirror().getGattService(SYSTEM_SERVICE_UUID);
-                BluetoothGattCharacteristic characteristic3 = service3.getCharacteristic(SYSTEM_CHAR_UUID);
-                int charaProp3 = characteristic3.getProperties();
-                ViseLog.e("DeviceControl--- serviceUUid" + service3.getUuid().toString());
-                ViseLog.e("DeviceControl--- characteristicUUid" + characteristic3.getUuid().toString());
-                ViseLog.e("DeviceControl--- charaProp" + charaProp3);
-                initNotice(service3, characteristic3, charaProp3);
-                new Handler().postDelayed(() -> {
-                    dissmiss();
-                    showCenterInfoMsg("蓝牙连接成功");
-                }, 1000);
-            }
-        }
+    private void stopUpdate() {
+        new DfuServiceInitiator(currentDevice.getAddress())
+                .setDisableNotification(true)
+                .setZip(R.raw.update)
+                .start((getBaseContext()), DfuService.class);
     }
 
     @Subscribe
@@ -417,8 +418,29 @@ public class HomeAct extends BaseActivity {
             if (event.isSuccess()) {
                 if (event.getBluetoothGattChannel() != null && event.getBluetoothGattChannel().getCharacteristic() != null
                         && event.getBluetoothGattChannel().getPropertyType() == PropertyType.PROPERTY_READ) {
-                    String msg = new String(event.getData(), StandardCharsets.UTF_8);
-                    Logger.e("showDeviceCallbackData ", msg);
+                    String returnMsg = new String(event.getData(), StandardCharsets.UTF_8);
+                    String serviceName = GattAttributeResolver.getAttributeName(event.getBluetoothGattChannel().getCharacteristic().getUuid().toString(), "其他服务").toLowerCase().replace(" ", "");
+                    ViseLog.e("当前服务名称： " + serviceName + "\n 返回消息: " + returnMsg);
+                    if (currentDevice.getName().equals(defaultNname) && currentType == type_check_for_update) {
+                        currentVersion = returnMsg.toLowerCase();
+                        if (serviceName.contains("softwarerevisionstring")) {
+                            ViseLog.e("当前服务名称： " + serviceName + "\n 当前版本信息: " + currentVersion);
+                            if (!"2.4a".equals(currentVersion)) {
+                                loading("连接到更新通道");
+                                new Handler().postDelayed(this::sendUpdateMsg, 3000);
+                            } else {
+                                showCenterSuccessMsg("当前设备已经是最新版本！");
+                                BluetoothDeviceManager.getInstance().disconnect(currentDevice);
+                            }
+                        }
+                    } else if (currentType == type_updateing) {
+                        loading("发送数据包");
+                        startUpdate();
+                    } else if (currentType == type_connect_mb0002) {
+                        showCenterSuccessMsg("连接成功！");
+                        dissmiss();
+                    }
+
                 }
             }
         }
@@ -429,11 +451,68 @@ public class HomeAct extends BaseActivity {
         if (event != null && event.getData() != null && event.getBluetoothLeDevice() != null
                 && event.getBluetoothLeDevice().getAddress().equals(currentDevice.getAddress())) {
             String msg = new String(event.getData(), StandardCharsets.UTF_8);
-            Logger.e("showDeviceNotifyData ", msg);
+            ViseLog.e("showDeviceNotifyData " + msg);
+            ViseLog.e("showDeviceNotifyData hex " + Arrays.toString(event.getData()));
             if (callBack != null) {
                 callBack.receivedData(msg);
             }
         }
+    }
+
+    @Subscribe
+    public void showConnectedDevice(ConnectEvent event) {
+        ViseLog.e("设备连接成功");
+        if (event != null) {
+            if (event.isSuccess()) {
+                if (StringUtils.value(currentDevice.getName()).equals(defaultNname)) {
+                    if (currentType == -1) {
+                        currentType = type_check_for_update;
+                        loading("检查升级中");
+                        bindCheckUpdateNotice();
+                        bindCheckUpdateReadAndWrite();
+                    } else if (currentType == type_check_for_update) {
+                        currentType = type_connect_mb0002;
+                        loading("连接蓝牙中");
+                        bindWrite();
+                        bindRead();
+                        bindNotice();
+                    } else if (currentType == type_updateing) {
+                        currentType = type_connect_mb0002;
+                        loading("连接蓝牙中");
+                        bindWrite();
+                        bindRead();
+                        bindNotice();
+                    }
+                    //检查升级
+                } else if (StringUtils.value(currentDevice.getName()).equals(dfuNname)) {
+                    loading("升级中");
+                    currentType = type_updateing;
+                    bindUpdateRead();
+                    bindUpdateWrite();
+                }
+            } else {
+                if (event.isDisconnected()) {
+                    startScan();
+                } else {
+                    showCenterInfoMsg("尝试重连！");
+                    startScan();
+                }
+            }
+        }
+    }
+
+
+    public synchronized void sendUpdateMsg() {
+        runOnUiThread(() -> {
+            int sendCount = 5;
+            while (sendCount > 0) {
+                sendCount--;
+                String input = "01";
+                byte[] inputValue = HexUtil.decodeHex(input.toCharArray());
+                new Handler().postDelayed(() -> BluetoothDeviceManager.getInstance().write(currentDevice, inputValue), sendCount * 00);
+            }
+
+        });
     }
 
     private void initNotice(BluetoothGattService service, BluetoothGattCharacteristic characteristic, int charaProp) {
@@ -452,7 +531,6 @@ public class HomeAct extends BaseActivity {
         }
     }
 
-
     @Override
     public void onBackPressed() {
         new AlertDialog.Builder(this)
@@ -464,7 +542,6 @@ public class HomeAct extends BaseActivity {
                 .show();
     }
 
-
     public synchronized void sendMsg(String msg) {
         runOnUiThread(() -> {
             byte[] value;
@@ -472,12 +549,99 @@ public class HomeAct extends BaseActivity {
             value = msg.getBytes(StandardCharsets.UTF_8);
             if (currentDevice != null) {
                 BluetoothDeviceManager.getInstance().write(currentDevice, value);
-                ViseLog.e("writeData -- 写入消息 --currentCommand:" + msg);
+                ViseLog.e("发送消息" + msg);
             } else {
                 ViseLog.e("当前蓝牙设备还未连接！");
             }
         });
     }
 
+
+    private void bindRead() {
+        new Handler().postDelayed(() -> {
+            BluetoothGattService service2 = BluetoothDeviceManager.getInstance().getDeviceMirror(currentDevice).getGattService(RX_SERVICE_UUID);
+            BluetoothGattCharacteristic characteristic2 = service2.getCharacteristic(RX_CHAR_UUID);
+            int charaProp2 = characteristic2.getProperties();
+            ViseLog.e("DeviceControl--- serviceUUid 绑定消息读取服务" + service2.getUuid().toString());
+            ViseLog.e("DeviceControl--- characteristicUUid" + characteristic2.getUuid().toString());
+            ViseLog.e("DeviceControl--- charaProp" + charaProp2);
+            initNotice(service2, characteristic2, charaProp2);
+        }, 500);
+    }
+
+    private void bindWrite() {
+        new Handler().postDelayed(() -> {
+            BluetoothGattService service1 = BluetoothDeviceManager.getInstance().getDeviceMirror(currentDevice).getGattService(TX_SERVICE_UUID);
+            BluetoothGattCharacteristic characteristic1 = service1.getCharacteristic(TX_CHAR_UUID);
+            int charaProp1 = characteristic1.getProperties();
+            ViseLog.e("DeviceControl--- serviceUUid 绑定消息写入服务" + service1.getUuid().toString());
+            ViseLog.e("DeviceControl--- characteristicUUid" + characteristic1.getUuid().toString());
+            ViseLog.e("DeviceControl--- charaProp" + charaProp1);
+            initNotice(service1, characteristic1, charaProp1);
+        }, 1000);
+    }
+
+    private void bindNotice() {
+        new Handler().postDelayed(() -> {
+            BluetoothGattService service4 = BluetoothDeviceManager.getInstance().getDeviceMirror(currentDevice).getGattService(SYSTEM_SERVICE_UUID);
+            BluetoothGattCharacteristic characteristic4 = service4.getCharacteristic(SYSTEM_CHAR_UUID);
+            int charaProp4 = characteristic4.getProperties();
+            ViseLog.e("DeviceControl--- serviceUUid 绑定读写的通知服务" + service4.getUuid().toString());
+            ViseLog.e("DeviceControl--- characteristicUUid" + characteristic4.getUuid().toString());
+            ViseLog.e("DeviceControl--- charaProp" + charaProp4);
+            initNotice(service4, characteristic4, charaProp4);
+        }, 2000);
+
+    }
+
+    private void bindUpdateRead() {
+        BluetoothGattService dfuService1 = BluetoothDeviceManager.getInstance().getDeviceMirror(currentDevice).getGattService(DFU_UPDATEING1_SERVICE_UUID);
+        BluetoothGattCharacteristic dfucharacter1 = dfuService1.getCharacteristic(DFU_UPDATEING1_CHAR_UUID);
+        int dfuCharaProp1 = dfucharacter1.getProperties();
+        ViseLog.e("DeviceControl--- serviceUUid 绑定更新读取服务" + dfuService1.getUuid().toString());
+        ViseLog.e("DeviceControl--- characteristicUUid" + dfucharacter1.getUuid().toString());
+        ViseLog.e("DeviceControl--- charaProp" + dfuCharaProp1);
+        initNotice(dfuService1, dfucharacter1, dfuCharaProp1);
+    }
+
+    private void bindUpdateWrite() {
+        BluetoothGattService dfuService2 = BluetoothDeviceManager.getInstance().getDeviceMirror(currentDevice).getGattService(DFU_UPDATEING2_SERVICE_UUID);
+        BluetoothGattCharacteristic dfucharacter2 = dfuService2.getCharacteristic(DFU_UPDATEING2_CHAR_UUID);
+        int dfuCharaProp2 = dfucharacter2.getProperties();
+        ViseLog.e("DeviceControl--- serviceUUid 绑定更新写入" + dfuService2.getUuid().toString());
+        ViseLog.e("DeviceControl--- characteristicUUid" + dfucharacter2.getUuid().toString());
+        ViseLog.e("DeviceControl--- charaProp" + dfuCharaProp2);
+        initNotice(dfuService2, dfucharacter2, dfuCharaProp2);
+    }
+
+    private void bindCheckUpdateNotice() {
+        BluetoothGattService softService = BluetoothDeviceManager.getInstance().getDeviceMirror(currentDevice).getGattService(SOFT_SERVICE_UUID);
+        BluetoothGattCharacteristic softCharacter = softService.getCharacteristic(SOFT_CHAR_UUID);
+        int SoftcharaProp = softCharacter.getProperties();
+        ViseLog.e("DeviceControl--- serviceUUid" + "检查升级DFU 通知服务");
+        ViseLog.e("DeviceControl--- serviceUUid" + softService.getUuid().toString());
+        ViseLog.e("DeviceControl--- characteristicUUid" + softCharacter.getUuid().toString());
+        ViseLog.e("DeviceControl--- charaProp" + SoftcharaProp);
+        initNotice(softService, softCharacter, SoftcharaProp);
+    }
+
+    private void bindCheckUpdateReadAndWrite() {
+        BluetoothGattService softService = BluetoothDeviceManager.getInstance().getDeviceMirror(currentDevice).getGattService(DFU_CHECK_FOR_UPDATE_SERVICE_UUID);
+        BluetoothGattCharacteristic softCharacter = softService.getCharacteristic(DFU_CHECK_FOR_UPDATE_CHAR_UUID);
+        int SoftcharaProp = softCharacter.getProperties();
+        ViseLog.e("DeviceControl--- serviceUUid" + "检查升级DFU 读写");
+        ViseLog.e("DeviceControl--- serviceUUid" + softService.getUuid().toString());
+        ViseLog.e("DeviceControl--- characteristicUUid" + softCharacter.getUuid().toString());
+        ViseLog.e("DeviceControl--- charaProp" + SoftcharaProp);
+        initNotice(softService, softCharacter, SoftcharaProp);
+    }
+
+    public interface BleCallBack {
+
+        void receivedData(String msg);
+
+        void disConnected();
+
+    }
 
 }

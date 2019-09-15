@@ -11,6 +11,8 @@
     <color name="colorAlbumText">#99FFFFFF</color>
     <color name="colorImageSelect">#000000</color>
     <color name="colorStatusBarBlue">#4eb8e4</color>
+    <color name="color_red">#d50000</color>
+    <color name="color_yellow">#ffcf9e</color>
 
     <!--相册状态栏-->
     <color name="colorButtonText">#FFFFFF</color>

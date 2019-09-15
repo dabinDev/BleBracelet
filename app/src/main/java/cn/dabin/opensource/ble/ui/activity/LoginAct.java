@@ -11,6 +11,7 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
+import com.gyf.immersionbar.ImmersionBar;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.HttpParams;
 
@@ -52,6 +53,10 @@ public class LoginAct extends BaseActivity implements View.OnClickListener {
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_login);
+        ImmersionBar.with(this)
+                .statusBarColor(R.color.colorAccent)
+                .navigationBarEnable(false)
+                .init();
         initView();
     }
 

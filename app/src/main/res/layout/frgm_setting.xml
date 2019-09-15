@@ -55,18 +55,21 @@
         <RadioButton
             android:id="@+id/radio_distance_27"
             style="@style/style_radio_check_label"
+            android:tag="270"
             android:text="27cm" />
 
         <RadioButton
             android:id="@+id/radio_distance_31"
             style="@style/style_radio_check_label"
             android:checked="true"
+            android:tag="310"
             android:text="31cm" />
 
 
         <RadioButton
             android:id="@+id/radio_distance_33"
             style="@style/style_radio_check_label"
+            android:tag="330"
             android:text="33cm" />
 
 

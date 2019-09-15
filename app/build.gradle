@@ -58,11 +58,11 @@ dependencies {
     implementation 'com.yanzhenjie.permission:support:2.0.1'
     implementation 'org.litepal.android:java:3.0.0'
     implementation 'com.vise.xiaoyaoyou:xsnow:2.1.5'
-    implementation project(path: ':dfu')
     implementation project(path: ':baseble')
     implementation project(path: ':Picture')
     implementation project(path: ':Multipleimageselect')
     implementation project(path: ':Luban')
     implementation project(path: ':Takephoto')
     implementation project(path: ':Pickerview')
+    implementation project(path: ':dfu')
 }

@@ -8,14 +8,15 @@ import android.widget.TextView;
 
 import com.bigkoo.pickerview.TimePickerView;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.gyf.immersionbar.ImmersionBar;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.HttpHeaders;
@@ -77,6 +78,8 @@ public class DataFagm extends BaseFragment implements TimePickerView.OnTimeSelec
         Logger.e("xListValue2  ", xListValue2.toString());
         initChart(chart1, xListValue1, 33);
         initChart(chart2, xListValue2, 50);
+        switchDate(1, new Date());
+        switchDate(2, new Date());
     }
 
     private void initView() {
@@ -137,17 +140,23 @@ public class DataFagm extends BaseFragment implements TimePickerView.OnTimeSelec
     }
 
 
-    private void initChart(LineChart chart, ArrayList<String> xListValue, int avage) {
+    private void initChart(LineChart chart, ArrayList<String> xListValue, int type) {
         mTf = Typeface.createFromAsset(getContext().getAssets(), "OpenSans-Regular.ttf");
+        chart.setNoDataText("暂无数据");
         chart.getDescription().setEnabled(false);//设置描述不显示
         chart.setPinchZoom(false);
         chart.setDrawGridBackground(false);//设置不显示网格
         chart.setBackgroundColor(Color.parseColor("#F3F3F3"));//设置图表的背景颜色
-        //chart.setMaxVisibleValueCount(60);
+        chart.getXAxis().setDrawGridLines(true);//是否显示竖直标尺线//chart.setMaxVisibleValueCount(60);
+        Description description = new Description();
+        description.setText(type == 1 ? "单位(/分钟)" : "单位(/百分之)");
+        description.setPosition(chart.getX(), chart.getY());
+        chart.setDescription(description);// 数据描述
+//chart.setMaxVisibleValueCount(60);
         //设置均值
-        LimitLine ll2 = new LimitLine(avage, "均值");
+        LimitLine ll2 = new LimitLine(type == 1 ? 33 : 50, "正常值");
         ll2.setLabel("均值");
-        ll2.setTextColor(Color.parseColor("#5dbcfe"));
+        ll2.setTextColor(type == 1 ? getResources().getColor(R.color.color_red) : getResources().getColor(R.color.color_yellow));
         ll2.setLineWidth(1f);
         ll2.setEnabled(true);
         ll2.setLineColor(Color.parseColor("#5dbcfe"));
@@ -181,6 +190,7 @@ public class DataFagm extends BaseFragment implements TimePickerView.OnTimeSelec
         //左边Y轴
         YAxis leftYAxis = chart.getAxisLeft();
         leftYAxis.setDrawGridLines(true);//设置从Y轴左侧发出横线
+        leftYAxis.setSpaceMin(10);
         leftYAxis.setAxisMinimum(0f);
         leftYAxis.setEnabled(true);//设置显示左边Y坐标
         //右边Y轴
@@ -215,7 +225,13 @@ public class DataFagm extends BaseFragment implements TimePickerView.OnTimeSelec
         //设置顶部当前今日时间
         String time = new SimpleDateFormat("yyyy.MM").format(date);
         String month = new SimpleDateFormat("MM.").format(date);
-        tvErrorUseDate.setText(time);
+        if (type == 1) {
+            tvNearUseDate.setText(time);
+            tvNearUseDate.setTag(date);
+        } else {
+            tvErrorUseDate.setText(time);
+            tvErrorUseDate.setTag(date);
+        }
         currentDate = date;
         HttpParams params1 = new HttpParams();
         params1.put("userMobile", readMobile());
@@ -232,7 +248,7 @@ public class DataFagm extends BaseFragment implements TimePickerView.OnTimeSelec
                         if (model != null) {
                             for (int i = 0; i < xListValue1.size(); i++) {
                                 String index = xListValue1.get(i);
-                                index = index.contains(month) ? index.replace(index, "") : index;
+                                index = index.contains(month) ? index.replace(month, "") : index;
                                 index = index.startsWith("0") ? index.replace("0", "") : index;
                                 if (type == 1) {
                                     if (model.optJSONArray(index) != null && model.optJSONArray(index).opt(0) != null) {
@@ -254,9 +270,9 @@ public class DataFagm extends BaseFragment implements TimePickerView.OnTimeSelec
                                         String shijian = arrayObject.optString("yongyanshijian");
                                         if (StringUtils.isNotEmpty(shijian)) {
                                             JSONObject shijianObject = new JSONObject(shijian);
-                                            int cuo = shijianObject.optInt("cuo");
-                                            int yi = shijianObject.optInt("yi");
-                                            baifenbi = cuo / yi * 100;
+                                            double cuo = shijianObject.optDouble("cuo");
+                                            double yi = shijianObject.optDouble("yi");
+                                            baifenbi = (int) (cuo / yi * 100);
                                         }
                                         yListValue2.add(baifenbi);
                                     } else {
@@ -302,24 +318,33 @@ public class DataFagm extends BaseFragment implements TimePickerView.OnTimeSelec
             set = new LineDataSet(yValues, "");
             set.setLineWidth(2.5f);
             set.setCircleRadius(4.5f);
-            set.setHighLightColor(Color.rgb(244, 117, 117));
-            set.setColor(ColorTemplate.VORDIPLOM_COLORS[0]);
-            set.setCircleColor(ColorTemplate.VORDIPLOM_COLORS[0]);
-            set.setDrawValues(false);
+            set.setColor(getResources().getColor(R.color.colorSecondaryText));
+            set.setCircleColor(getResources().getColor(R.color.colorWrong));
+            set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+            set.setVisible(true);//是否显示柱状图柱子
+            set.setDrawValues(true);//是否显示柱子上面的数值
         } else {
             set = new LineDataSet(yValues, "");
             set.setDrawIcons(false);//设置直方图上面时候显示图标
             set.setLineWidth(2.5f);
             set.setCircleRadius(4.5f);
-            set.setHighLightColor(Color.rgb(244, 117, 117));
-            set.setColor(ColorTemplate.VORDIPLOM_COLORS[0]);
-            set.setCircleColor(ColorTemplate.VORDIPLOM_COLORS[0]);
-            set.setDrawValues(false);
+            set.setColor(getResources().getColor(R.color.colorSecondaryText));
+            set.setCircleColor(getResources().getColor(R.color.colorWrong));
+            set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+            set.setVisible(true);//是否显示柱状图柱子
+            set.setDrawValues(true);//是否显示柱子上面的数值
             ArrayList<ILineDataSet> iLineDS = new ArrayList<ILineDataSet>();
             iLineDS.add(set);
             LineData data = new LineData(iLineDS);
+            data.setDrawValues(true);
+            data.setValueTypeface(mTf);
             data.setValueTextSize(10f);//设置直方图上面文字的大小
-            data.setValueTextColor(Color.parseColor("#ffffff"));//设置直方图顶部显示Y值的颜色
+            data.setValueTextColor(getResources().getColor(R.color.colorSecondaryText));//设置直方图顶部显示Y值的颜色
+            data.setValueFormatter(new ValueFormatter() {
+                @Override public String getFormattedValue(float value) {
+                    return String.valueOf((int) value);
+                }
+            });
             chart.setData(data);//设置值
             chart.invalidate();
         }
@@ -329,10 +354,24 @@ public class DataFagm extends BaseFragment implements TimePickerView.OnTimeSelec
     @Override public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_near_use_date:
-                pvTime.show(view);
+                if (view.getTag() != null) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime((Date) view.getTag());
+                    pvTime.setDate(calendar);
+                    pvTime.show(view);
+                } else {
+                    pvTime.show(view);
+                }
                 break;
             case R.id.tv_error_use_date:
-                pvTime.show(view);
+                if (view.getTag() != null) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime((Date) view.getTag());
+                    pvTime.setDate(calendar);
+                    pvTime.show(view);
+                } else {
+                    pvTime.show(view);
+                }
                 break;
             default:
                 break;

@@ -6,40 +6,40 @@
 6
 7    <uses-sdk
 8        android:minSdkVersion="17"
-8-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml
+8-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml
 9        android:targetSdkVersion="28" />
-9-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml
+9-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml
 10
 11    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-11-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:5:5-81
-11-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:5:22-78
+11-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:5:5-81
+11-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:5:22-78
 12    <uses-permission android:name="android.permission.CAMERA" />
-12-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:6:5-65
-12-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:6:22-62
+12-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:6:5-65
+12-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:6:22-62
 13
 14    <application android:allowBackup="true" >
-14-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:8:5-19:19
-14-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:8:18-44
+14-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:8:5-19:19
+14-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:8:18-44
 15        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
-15-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:9:9-82
-15-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:9:19-79
+15-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:9:9-82
+15-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:9:19-79
 16
 17        <provider
-17-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:10:9-18:20
+17-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:10:9-18:20
 18            android:name="androidx.core.content.FileProvider"
-18-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:11:13-62
+18-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:11:13-62
 19            android:authorities="dollar_openBracket_applicationId_closeBracket.fileprovider"
-19-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:12:13-64
+19-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:12:13-64
 20            android:exported="false"
-20-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:13:13-37
+20-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:13:13-37
 21            android:grantUriPermissions="true" >
-21-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:14:13-47
+21-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:14:13-47
 22            <meta-data
-22-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:15:13-17:55
+22-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:15:13-17:55
 23                android:name="android.support.FILE_PROVIDER_PATHS"
-23-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:16:17-67
+23-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:16:17-67
 24                android:resource="@xml/file_paths1" />
-24-->F:\AndroidProject\BleBracelet\Takephoto\src\main\AndroidManifest.xml:17:17-52
+24-->F:\Github\BleBracelet\Takephoto\src\main\AndroidManifest.xml:17:17-52
 25        </provider>
 26    </application>
 27

@@ -1,1 +1,1 @@
-include ':app', ':Bottombar', ':Prompt', ':MPChartLib', ':dfu', ':baseble', ':Takephoto', ':Luban', ':Multipleimageselect', ':Picture', ':Pickerview'
+include ':app', ':Bottombar', ':Prompt', ':MPChartLib', ':baseble', ':Takephoto', ':Luban', ':Multipleimageselect', ':Picture', ':Pickerview', ':dfu'

@@ -947,23 +947,12 @@ public class DateUtil {
     }
 
     public static Long removeSecond(long timestamp) {
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
-        int second = 0;
-        int millisecond = 0;
-        Calendar newCalendar = Calendar.getInstance();
-        newCalendar.set(Calendar.YEAR, year);
-        newCalendar.set(Calendar.MONTH, month);
-        newCalendar.set(Calendar.DAY_OF_MONTH, day);
-        newCalendar.set(Calendar.HOUR_OF_DAY, hour);
-        newCalendar.set(Calendar.MINUTE, minute);
-        newCalendar.set(Calendar.SECOND, second);
-        newCalendar.set(Calendar.MILLISECOND, millisecond);
-        return newCalendar.getTimeInMillis() / 1000;
+        Calendar newCalendar =Calendar.getInstance();
+        newCalendar.clear();
+        newCalendar.setTimeInMillis(timestamp);
+        newCalendar.set(Calendar.SECOND, 0);
+        newCalendar.set(Calendar.MILLISECOND, 0);
+        return newCalendar.getTimeInMillis();
     }
 
 
@@ -976,11 +965,9 @@ public class DateUtil {
         int day = calendar.getActualMaximum(Calendar.DATE);
         for (int i = 1; i <= day; i++) {
             Calendar tempCalendar = Calendar.getInstance(Locale.CHINA);
-            if (month < 10 && i < 10) {
-                tempCalendar.set(Calendar.YEAR, year);//年份
-                tempCalendar.set(Calendar.MONTH, month - 1);//月份
-                tempCalendar.set(Calendar.DATE, i);
-            }
+            tempCalendar.set(Calendar.YEAR, year);//年份
+            tempCalendar.set(Calendar.MONTH, month - 1);//月份
+            tempCalendar.set(Calendar.DATE, i);
             String aDate = "";
             if (StringUtils.isEmpty(regx)) {
                 aDate = new SimpleDateFormat("yyyy-MM-dd").format(tempCalendar.getTime());

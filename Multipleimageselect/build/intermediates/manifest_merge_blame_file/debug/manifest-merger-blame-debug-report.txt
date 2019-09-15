@@ -6,52 +6,52 @@
 6
 7    <uses-sdk
 8        android:minSdkVersion="17"
-8-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+8-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
 9        android:targetSdkVersion="28" />
-9-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
+9-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml
 10
 11    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-11-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:5:5-81
-11-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:5:22-78
+11-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:5:5-81
+11-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:5:22-78
 12
 13    <application
-13-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:7:5-28:19
+13-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:7:5-28:19
 14        android:allowBackup="true"
-14-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:8:9-35
+14-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:8:9-35
 15        android:label="@string/app_name" >
-15-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:9:9-41
+15-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:9:9-41
 16        <activity
-16-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:10:9-18:20
+16-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:10:9-18:20
 17            android:name="com.darsh.multipleimageselect.activities.AlbumSelectActivity"
-17-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:11:13-59
+17-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:11:13-59
 18            android:configChanges="orientation|screenSize"
-18-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:12:13-59
+18-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:12:13-59
 19            android:label="@string/app_name"
-19-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:13:13-45
+19-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:13:13-45
 20            android:theme="@style/MultipleImageSelectTheme" >
-20-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:14:13-60
+20-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:14:13-60
 21            <intent-filter>
-21-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:15:13-17:29
+21-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:15:13-17:29
 22                <category android:name="android.intent.category.DEFAULT" />
-22-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:16:17-76
-22-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:16:27-73
+22-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:16:17-76
+22-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:16:27-73
 23            </intent-filter>
 24        </activity>
 25        <activity
-25-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:19:9-27:20
+25-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:19:9-27:20
 26            android:name="com.darsh.multipleimageselect.activities.ImageSelectActivity"
-26-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:20:13-59
+26-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:20:13-59
 27            android:configChanges="orientation|screenSize"
-27-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:21:13-59
+27-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:21:13-59
 28            android:label="@string/app_name"
-28-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:22:13-45
+28-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:22:13-45
 29            android:theme="@style/MultipleImageSelectTheme" >
-29-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:23:13-60
+29-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:23:13-60
 30            <intent-filter>
-30-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:15:13-17:29
+30-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:15:13-17:29
 31                <category android:name="android.intent.category.DEFAULT" />
-31-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:16:17-76
-31-->F:\AndroidProject\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:16:27-73
+31-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:16:17-76
+31-->F:\Github\BleBracelet\Multipleimageselect\src\main\AndroidManifest.xml:16:27-73
 32            </intent-filter>
 33        </activity>
 34    </application>
